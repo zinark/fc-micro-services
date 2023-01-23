@@ -126,7 +126,7 @@ The variable a will be crushed to 100 in the environment it is running.
 The default value of 1 is the value to be assigned if nothing is found. It is optional, if it is not given, it means no default value. And we force it to be in env and appsettings.
 
 
-## Servis ayarlari
+## Settings for api
 
 * use_pubsub : "yes" / "no"
 
