@@ -1,12 +1,12 @@
-﻿using fc.microservices.Components.BUS;
-using fc.microservices.Components.BUS.Events;
-using fc.microservices.Utils;
+﻿using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.BUS.Events;
+using FCMicroservices.Utils;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using System.Collections.Concurrent;
 
-namespace fc.microservices.Components.FunctionRegistries
+namespace FCMicroservices.Components.FunctionRegistries
 {
     public class FunctionRegistry : IFunctionRegistry
     {

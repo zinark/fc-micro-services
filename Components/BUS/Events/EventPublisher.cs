@@ -1,32 +1,30 @@
-﻿using fc.micro.services.Components.BUS;
-using fc.microservices.Extensions;
+﻿using FCMicroservices.Extensions;
 
 using NATS.Client;
 
 using System.Text;
 
-namespace fc.microservices.Components.BUS.Events
+namespace FCMicroservices.Components.BUS.Events;
+
+public class EventPublisher : IEventPublisher
 {
-    public class EventPublisher : IEventPublisher
+    string _url;
+    static readonly ConnectionFactory _factory = new();
+
+    public EventPublisher(string url)
     {
-        string _url;
-        static readonly ConnectionFactory _factory = new();
+        _url = url;
+    }
 
-        public EventPublisher(string url)
-        {
-            _url = url;
-        }
+    public void Publish<T>(T @event)
+    {
+        if (@event == null) throw new ApiException("event bos olamaz");
+        var data = Encoding.UTF8.GetBytes(@event.ToJson());
+        var subject = @event.GetType().Name;
 
-        public void Publish<T>(T @event)
-        {
-            if (@event == null) throw new ApiException("event bos olamaz");
-            var data = Encoding.UTF8.GetBytes(@event.ToJson());
-            var subject = @event.GetType().Name;
-
-            using var conn = _factory.CreateConnection(_url);
-            conn.Publish(subject, data);
-            conn.Drain();
-            conn.Close();
-        }
+        using var conn = _factory.CreateConnection(_url);
+        conn.Publish(subject, data);
+        conn.Drain();
+        conn.Close();
     }
 }

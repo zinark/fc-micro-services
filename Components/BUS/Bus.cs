@@ -1,7 +1,7 @@
-﻿using fc.microservices.Components.FunctionRegistries;
-using fc.microservices.Components.Loggers;
-using fc.microservices.Extensions;
-using fc.microservices.Utils;
+﻿using FCMicroservices.Components.FunctionRegistries;
+using FCMicroservices.Components.Loggers;
+using FCMicroservices.Extensions;
+using FCMicroservices.Utils;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 using System.Collections.Concurrent;
 
-namespace fc.microservices.Components.BUS;
+namespace FCMicroservices.Components.BUS;
 
 public class Bus
 {

@@ -1,15 +1,14 @@
-﻿using fc.micro.services.Components.BUS;
-using fc.microservices.Components.FunctionRegistries;
-using fc.microservices.Components.Loggers;
-using fc.microservices.Utils;
+﻿using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.BUS.Events;
+using FCMicroservices.Components.FunctionRegistries;
+using FCMicroservices.Components.Loggers;
+using FCMicroservices.Utils;
 
 using NATS.Client;
 
 using Newtonsoft.Json;
 
 using System.Text;
-
-namespace fc.microservices.Components.BUS.Events;
 
 public class EventSubscriber : IDisposable, IEventSubscriber
 {

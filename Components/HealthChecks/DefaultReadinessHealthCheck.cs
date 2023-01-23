@@ -1,8 +1,8 @@
-﻿using fc.microservices.Extensions;
+﻿using FCMicroservices.Extensions;
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace fc.microservices.Components.HealthChecks;
+namespace FCMicroservices.Components.HealthChecks;
 
 public class DefaultReadinessHealthCheck : IHealthCheck
 {

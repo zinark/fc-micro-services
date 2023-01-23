@@ -1,8 +1,8 @@
-﻿using fc.micro.services.Components.BUS;
+﻿using FCMicroservices.Components.BUS;
 
 using Microsoft.Extensions.Configuration;
 
-namespace fc.microservices.Components.Configurations;
+namespace FCMicroservices.Components.Configurations;
 
 public class ConfigLoader : IConfigLoader
 {

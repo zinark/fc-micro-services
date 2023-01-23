@@ -1,5 +1,5 @@
-﻿using fc.microservices.Components.BUS;
-using fc.microservices.Utils;
+﻿using FCMicroservices.Components.BUS;
+using FCMicroservices.Utils;
 
 using Google.Protobuf;
 
@@ -8,9 +8,7 @@ using NJsonSchema.CodeGeneration.CSharp;
 using System.Reflection;
 using System.Text;
 
-using Ticimax.MicroServices;
-
-namespace fc.microservices;
+namespace FCMicroservices;
 
 public class MicroMessageContractGenerator
 {

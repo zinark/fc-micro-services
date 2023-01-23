@@ -1,4 +1,4 @@
-﻿namespace fc.microservices.Components.Configurations
+﻿namespace FCMicroservices.Components.Configurations
 {
     public class FakeConfigLoader : IConfigLoader
     {

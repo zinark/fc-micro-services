@@ -1,6 +1,6 @@
-﻿using fc.microservices.Extensions;
+﻿using FCMicroservices.Extensions;
 
-namespace fc.microservices.Components.BUS
+namespace FCMicroservices.Components.BUS
 {
     public class ApiException : Exception
     {

@@ -1,30 +1,29 @@
 ﻿using System.Diagnostics;
 
-using fc.microservices.Utils;
+using FCMicroservices.Utils;
 
-namespace fc.microservices.Components.Loggers
+namespace FCMicroservices.Components.Loggers;
+
+public class LogTracer : ITracer
 {
-    public class LogTracer : ITracer
+    static readonly ActivitySource source = new ActivitySource(AssemblyUtils.API_FULL_NAME);
+    public (Activity, ActivitySource) Trace(string title, string key, object value)
     {
-        static readonly ActivitySource source = new ActivitySource(AssemblyUtils.API_FULL_NAME);
-        public (Activity, ActivitySource) Trace(string title, string key, object value)
+        using var activity = source.StartActivity(title, ActivityKind.Internal);
+        activity?.SetTag(key, value);
+        return (activity, source);
+    }
+
+    public (Activity, ActivitySource) Trace(string title, IDictionary<string, object> values)
+    {
+        using var activity = source.StartActivity(title, ActivityKind.Internal);
+
+        foreach (var key in values.Keys)
         {
-            using var activity = source.StartActivity(title, ActivityKind.Internal);
+            var value = values[key];
             activity?.SetTag(key, value);
-            return (activity, source);
         }
 
-        public (Activity, ActivitySource) Trace(string title, IDictionary<string, object> values)
-        {
-            using var activity = source.StartActivity(title, ActivityKind.Internal);
-
-            foreach (var key in values.Keys)
-            {
-                var value = values[key];
-                activity?.SetTag(key, value);
-            }
-
-            return (activity, source);
-        }
+        return (activity, source);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace fc.microservices.Components.CustomerDomainResolvers
+﻿namespace FCMicroservices.Components.CustomerDomainResolvers
 {
     public class FakeTenantResolver : ITenantResolver
     {

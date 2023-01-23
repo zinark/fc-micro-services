@@ -1,4 +1,4 @@
-﻿namespace fc.microservices.Components.BUS.Events
+﻿namespace FCMicroservices.Components.BUS.Events
 {
     public interface IEventPublisher
     {

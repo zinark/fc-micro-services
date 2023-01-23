@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 
-namespace fc.microservices.Utils;
+namespace FCMicroservices.Utils;
 
 public static class AssemblyUtils
 {

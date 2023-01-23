@@ -1,10 +1,10 @@
-﻿using fc.micro.services.Components.BUS;
+﻿using FCMicroservices.Components.BUS;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace fc.microservices.Extensions;
+namespace FCMicroservices.Extensions;
 
 public static class StringExtensions
 {

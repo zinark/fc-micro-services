@@ -1,6 +1,6 @@
-﻿using fc.microservices.Components.Configurations;
-using fc.microservices.Components.HealthChecks;
-using fc.microservices.Utils;
+﻿using FCMicroservices.Components.Configurations;
+using FCMicroservices.Components.HealthChecks;
+using FCMicroservices.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ using OpenTelemetry.Trace;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace fc.microservices;
+namespace FCMicroservices;
 
 public class ServiceRegistrations
 {

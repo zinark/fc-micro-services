@@ -1,4 +1,4 @@
-﻿namespace fc.microservices.Extensions
+﻿namespace FCMicroservices.Extensions
 {
     public static class TaskExtensions
     {

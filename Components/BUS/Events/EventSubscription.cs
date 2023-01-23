@@ -1,6 +1,4 @@
-﻿using fc.micro.services.Components.BUS;
-
-namespace fc.microservices.Components.BUS.Events;
+﻿namespace FCMicroservices.Components.BUS.Events;
 
 public abstract class EventSubscription<T> : IEventSubscription
 {

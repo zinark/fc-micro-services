@@ -1,4 +1,4 @@
-﻿namespace fc.microservices.Components.FunctionRegistries
+﻿namespace FCMicroservices.Components.FunctionRegistries
 {
     public class Function
     {

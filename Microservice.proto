@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "Ticimax.MicroServices";
+option csharp_namespace = "FCMicroservices";
 import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
