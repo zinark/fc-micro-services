@@ -2,6 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
-/bin
-/obj
+/.vs/FC.Microservices
+/FC.Microservices.Tests/bin/Debug/net7.0
+/FC.Microservices.Tests/obj
