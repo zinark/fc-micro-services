@@ -1,6 +1,6 @@
-﻿using fc.micro.services.Components.BUS;
-using fc.micro.services.Extensions;
-using fc.micro.services.Utils;
+﻿using fc.microservices.Components.BUS;
+using fc.microservices.Extensions;
+using fc.microservices.Utils;
 
 using Microsoft.AspNetCore.Http;
 
@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Security;
 
-namespace fc.micro.services.Components.Middlewares
+namespace fc.microservices.Components.Middlewares
 {
 
     public class JsonExceptionMiddleware

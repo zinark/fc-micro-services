@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace fc.micro.services.Components.CustomerDomainResolvers
+namespace fc.microservices.Components.CustomerDomainResolvers
 {
     public class HttpTenantResolver : ITenantResolver
     {

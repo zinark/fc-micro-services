@@ -1,4 +1,4 @@
-﻿namespace fc.micro.services.Components.CustomerDomainResolvers
+﻿namespace fc.microservices.Components.CustomerDomainResolvers
 {
     public interface ITenantResolver
     {

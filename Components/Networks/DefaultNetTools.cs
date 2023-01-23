@@ -2,9 +2,9 @@
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 
-using static fc.micro.services.Components.Networks.INetTools;
+using static fc.microservices.Components.Networks.INetTools;
 
-namespace fc.micro.services.Components.Networks;
+namespace fc.microservices.Components.Networks;
 
 public class DefaultNetTools : INetTools
 {

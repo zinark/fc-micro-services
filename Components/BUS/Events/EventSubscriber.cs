@@ -1,6 +1,7 @@
-﻿using fc.micro.services.Components.FunctionRegistries;
-using fc.micro.services.Components.Loggers;
-using fc.micro.services.Utils;
+﻿using fc.micro.services.Components.BUS;
+using fc.microservices.Components.FunctionRegistries;
+using fc.microservices.Components.Loggers;
+using fc.microservices.Utils;
 
 using NATS.Client;
 
@@ -8,7 +9,7 @@ using Newtonsoft.Json;
 
 using System.Text;
 
-namespace fc.micro.services.Components.BUS.Events;
+namespace fc.microservices.Components.BUS.Events;
 
 public class EventSubscriber : IDisposable, IEventSubscriber
 {

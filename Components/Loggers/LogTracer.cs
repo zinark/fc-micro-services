@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 
-using fc.micro.services.Utils;
+using fc.microservices.Utils;
 
-namespace fc.micro.services.Components.Loggers
+namespace fc.microservices.Components.Loggers
 {
     public class LogTracer : ITracer
     {

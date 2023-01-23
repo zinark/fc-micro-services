@@ -1,9 +1,9 @@
-﻿using fc.micro.services.Utils;
+﻿using fc.microservices.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
-namespace fc.micro.services
+namespace fc.microservices
 {
     public class AppRegistrations
     {

@@ -5,19 +5,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <AssemblyVersion>0.0.1</AssemblyVersion>
     <FileVersion>0.0.1</FileVersion>
-    <RootNamespace>fc.micro.services</RootNamespace>
+    <RootNamespace>fc.microservices</RootNamespace>
     <PackageId>fc-micro-services</PackageId>
     <ApplicationIcon>box_package_brand_design_icon_153195.ico</ApplicationIcon>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Company>ferhat celik</Company>
     <Description>a boilerplate microservice framework</Description>
     <PackageIcon>box_package_brand_design_icon_153195.png</PackageIcon>
-    <PackageReadmeFile>Readme.MD</PackageReadmeFile>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageTags>microservice</PackageTags>
-    <PackAsTool>True</PackAsTool>
+    <PackAsTool>False</PackAsTool>
     <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 
@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <Content Include="box_package_brand_design_icon_153195.ico" />
-    <Content Include="Readme.MD" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,7 +89,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Readme.MD">
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Readme.mdmd">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

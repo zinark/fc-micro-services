@@ -1,7 +1,7 @@
-﻿using fc.micro.services.Components.BUS.Events;
-using fc.micro.services.Extensions;
+﻿using fc.microservices.Components.BUS.Events;
+using fc.microservices.Extensions;
 
-namespace fc.micro.services
+namespace fc.microservices
 {
     public class NoEventPublisher : IEventPublisher
     {

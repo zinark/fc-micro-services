@@ -1,10 +1,11 @@
-﻿using fc.micro.services.Extensions;
+﻿using fc.micro.services.Components.BUS;
+using fc.microservices.Extensions;
 
 using NATS.Client;
 
 using System.Text;
 
-namespace fc.micro.services.Components.BUS.Events
+namespace fc.microservices.Components.BUS.Events
 {
     public class EventPublisher : IEventPublisher
     {

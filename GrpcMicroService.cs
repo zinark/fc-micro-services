@@ -2,11 +2,12 @@
 using Ticimax.MicroServices;
 using Google.Protobuf;
 using System.Text;
-using fc.micro.services.Components.BUS;
-using fc.micro.services.Extensions;
-using fc.micro.services.Components.Loggers;
+using fc.micro.services;
+using fc.microservices.Components.Loggers;
+using fc.microservices.Extensions;
+using fc.microservices.Components.BUS;
 
-namespace fc.micro.services;
+namespace fc.microservices;
 
 public class GrpcMicroService : MicroService.MicroServiceBase
 {

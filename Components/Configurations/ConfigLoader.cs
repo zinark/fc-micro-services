@@ -2,7 +2,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace fc.micro.services.Components.Configurations;
+namespace fc.microservices.Components.Configurations;
 
 public class ConfigLoader : IConfigLoader
 {

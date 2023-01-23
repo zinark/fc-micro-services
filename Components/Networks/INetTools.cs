@@ -1,4 +1,4 @@
-﻿namespace fc.micro.services.Components.Networks;
+﻿namespace fc.microservices.Components.Networks;
 
 public interface INetTools
 {

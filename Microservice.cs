@@ -1,13 +1,14 @@
-﻿using fc.micro.services.Components.BUS;
-using fc.micro.services.Components.BUS.Events;
-using fc.micro.services.Components.Configurations;
-using fc.micro.services.Components.CustomerDomainResolvers;
-using fc.micro.services.Components.FunctionRegistries;
-using fc.micro.services.Components.Loggers;
-using fc.micro.services.Components.Middlewares;
-using fc.micro.services.Components.Networks;
-using fc.micro.services.Extensions;
-using fc.micro.services.Utils;
+﻿using fc.micro.services.Components.FunctionRegistries;
+using fc.microservices.Components.BUS;
+using fc.microservices.Components.BUS.Events;
+using fc.microservices.Components.Configurations;
+using fc.microservices.Components.CustomerDomainResolvers;
+using fc.microservices.Components.FunctionRegistries;
+using fc.microservices.Components.Loggers;
+using fc.microservices.Components.Middlewares;
+using fc.microservices.Components.Networks;
+using fc.microservices.Extensions;
+using fc.microservices.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 
-namespace fc.micro.services;
+namespace fc.microservices;
 
 public class Microservice
 {

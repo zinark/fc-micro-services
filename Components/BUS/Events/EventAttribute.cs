@@ -1,4 +1,4 @@
-﻿namespace fc.micro.services.Components.BUS.Events
+﻿namespace fc.microservices.Components.BUS.Events
 {
     public class EventAttribute : MicroMessageAttribute
     {

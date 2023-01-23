@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace fc.micro.services
+namespace fc.microservices
 {
     public class Probes
     {

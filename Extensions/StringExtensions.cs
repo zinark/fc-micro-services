@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace fc.micro.services.Extensions;
+namespace fc.microservices.Extensions;
 
 public static class StringExtensions
 {

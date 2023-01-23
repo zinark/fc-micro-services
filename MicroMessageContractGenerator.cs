@@ -1,5 +1,5 @@
-﻿using fc.micro.services.Components.BUS;
-using fc.micro.services.Utils;
+﻿using fc.microservices.Components.BUS;
+using fc.microservices.Utils;
 
 using Google.Protobuf;
 
@@ -10,7 +10,7 @@ using System.Text;
 
 using Ticimax.MicroServices;
 
-namespace fc.micro.services;
+namespace fc.microservices;
 
 public class MicroMessageContractGenerator
 {

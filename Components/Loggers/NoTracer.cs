@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace fc.micro.services.Components.Loggers
+namespace fc.microservices.Components.Loggers
 {
     public class NoTracer : ITracer
     {
