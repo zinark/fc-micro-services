@@ -10,11 +10,11 @@
     <FileVersion>0.0.1</FileVersion>
     <RootNamespace>FCMicroservices</RootNamespace>
     <PackageId>FCMicroservices</PackageId>
-    <ApplicationIcon>box_package_brand_design_icon_153195.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Company>ferhat celik</Company>
     <Description>a boilerplate microservice framework</Description>
-    <PackageIcon>box_package_brand_design_icon_153195.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageTags>microservice</PackageTags>
     <PackAsTool>False</PackAsTool>
@@ -34,11 +34,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="box_package_brand_design_icon_153195.ico" />
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\Users\root\Downloads\box_package_brand_design_icon_153195.png">
+    <None Include="icon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
