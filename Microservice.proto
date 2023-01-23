@@ -1,0 +1,117 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Ticimax.MicroServices";
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+package MicroServices;
+
+service MicroService { 
+	rpc ByteExecute (ByteCommand) returns (ByteReply);
+    rpc BatchByteExecute (ByteCommandList) returns (ByteReplyList);
+
+	rpc Execute (Command) returns (Reply) {
+        option (google.api.http) = {
+            post: "/Execute"
+            body: "*"
+        };
+	}
+
+    rpc BatchExecute (CommandList) returns (ReplyList) {
+        option (google.api.http) = {
+            post: "/BatchExecute"
+            body: "*"
+        };
+	}
+	rpc Query (Filter) returns (Reply) {
+        option (google.api.http) = {
+            post: "/Query"
+            body: "*"
+        };
+	}
+
+    rpc BatchQuery (FilterList) returns (ReplyList) {
+        option (google.api.http) = {
+            post: "/BatchQuery"
+            body: "*"
+        };
+	}
+
+
+    rpc Contracts (None) returns (MicroMessageContracts){
+        option (google.api.http) = {
+            post: "/Contracts"
+            body: "*"
+        };
+    
+    }
+    
+}
+
+message None {
+
+}
+
+message MicroMessageContracts {
+    int32 total = 1;
+    repeated MicroMessageContract messages = 2;
+}
+
+message MicroMessageContract {
+    string fullName = 1;
+    string file = 2;
+    string namespace = 3;
+    google.protobuf.Struct sample = 4;
+    bytes content = 5;
+}
+
+
+message Filter { 
+	string type = 1;
+    string json = 2;
+}
+
+message Reply {
+    string type = 1;
+    string json = 2;
+    bool success = 3;
+    string error = 4;
+}
+
+message ByteReply {
+    bytes type = 1;
+    bytes json = 2;
+    bool success = 3;
+    string error = 4;
+}
+
+message ByteCommand {
+	bytes type = 1;
+    bytes json = 2;
+}
+
+message ByteCommandList {
+    repeated ByteCommand Commands = 1;
+}
+
+
+message Command {
+	string type = 1;
+    string json = 2;
+}
+
+message CommandList {
+    repeated Command Commands = 1;
+}
+
+message FilterList {
+    repeated Filter Filters = 1;
+}
+
+message ReplyList {
+    repeated Reply Replies = 1;
+}
+
+message ByteReplyList {
+    repeated ByteReply Replies = 1;
+}
