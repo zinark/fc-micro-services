@@ -29,7 +29,7 @@ public class EventSubscriber : IDisposable, IEventSubscriber
         {
             _connection = factory.CreateConnection(_url);
         }
-        catch (Exception ex)
+        catch (Exception? ex)
         {
             throw new ApiException("NATS.IO icin {0} baglanti adresine erisilemedi! Event kullanmak icin queue gerekiyor. " + Environment.NewLine +
                 "Event calismasini istemiyorsaniz, appsettings.json dosyasinda 'use_pubsub': 'no' ekleyebilirsiniz." + Environment.NewLine +
@@ -105,7 +105,7 @@ public class EventSubscriber : IDisposable, IEventSubscriber
 
                 args.Message.Ack();
             }
-            catch (Exception exc)
+            catch (Exception? exc)
             {
                 args.Message.Nak();
 

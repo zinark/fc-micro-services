@@ -2,6 +2,6 @@
 {
     public interface IConfigLoader
     {
-        string Load(string path, string defaultValue = "");
+        string Load(string? path, string defaultValue = "");
     }
 }

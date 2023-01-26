@@ -25,12 +25,12 @@ public class GrpcMicroService : MicroService.MicroServiceBase
         return ByteString.CopyFrom(b);
     }
 
-    private Bus _bus;
+    private EnterpriseBus _enterpriseBus;
     private ITracer _tracer;
 
-    public GrpcMicroService(Bus bus, ITracer tracer)
+    public GrpcMicroService(EnterpriseBus enterpriseBus, ITracer tracer)
     {
-        _bus = bus;
+        _enterpriseBus = enterpriseBus;
         _tracer = tracer;
     }
 
@@ -105,8 +105,8 @@ public class GrpcMicroService : MicroService.MicroServiceBase
 
         try
         {
-            Bus.CheckAttribute<QueryAttribute>(type);
-            var reply = _bus.Handle(type, js);
+            EnterpriseBus.CheckAttribute<QueryAttribute>(type);
+            var reply = _enterpriseBus.Handle(type, js);
             return new Reply()
             {
                 Success = true,
@@ -149,9 +149,9 @@ public class GrpcMicroService : MicroService.MicroServiceBase
 
         try
         {
-            Bus.CheckAttribute<CommandAttribute>(type);
+            EnterpriseBus.CheckAttribute<CommandAttribute>(type);
 
-            var reply = _bus.Handle(type, js);
+            var reply = _enterpriseBus.Handle(type, js);
             var result = new Reply()
             {
                 Success = true,

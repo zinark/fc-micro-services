@@ -74,7 +74,7 @@ public class Microservice
 
         void DefaultInjections(IServiceCollection services)
         {
-            services.AddSingleton<Bus>();
+            services.AddSingleton<EnterpriseBus>();
             services.AddTransient<INetTools, DefaultNetTools>();
             services.AddSingleton<IConfigLoader, ConfigLoader>();
             services.AddSingleton<ITenantResolver, HttpTenantResolver>();
@@ -114,7 +114,7 @@ public class Microservice
 
             _functionRegistry = new FunctionRegistry(services);
             services.AddSingleton(x => _functionRegistry);
-            Bus.Init(_functionRegistry);
+            EnterpriseBus.Init(_functionRegistry);
             EventSubscriber.Init(_functionRegistry);
         }
 

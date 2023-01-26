@@ -13,7 +13,7 @@ public static class StringExtensions
         ContractResolver = new CamelCasePropertyNamesContractResolver()
     };
 
-    public static string ToJson(this object target, bool ident = false)
+    public static string ToJson(this object? target, bool ident = false)
     {
         var formatting = ident ? Formatting.Indented : Formatting.None;
         return JsonConvert.SerializeObject(target, formatting, _jsonSettings);

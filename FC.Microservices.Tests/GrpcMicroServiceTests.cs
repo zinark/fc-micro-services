@@ -102,11 +102,11 @@ namespace FCMicroservices.Tests
         {
             IServiceCollection services = new ServiceCollection();
             var functionRegistry = new FunctionRegistry(services);
-            Bus.Init(functionRegistry);
+            EnterpriseBus.Init(functionRegistry);
 
             IServiceProvider provider = services
                 .AddSingleton<ITracer, NoTracer>()
-                .AddSingleton<Bus>()
+                .AddSingleton<EnterpriseBus>()
                 .AddSingleton<GrpcMicroService>()
                 .BuildServiceProvider();
 

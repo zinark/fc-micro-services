@@ -7,14 +7,14 @@ namespace FCMicroservices.Components.Configurations;
 public class ConfigLoader : IConfigLoader
 {
     readonly IConfiguration _config;
-    readonly static Dictionary<string, string> _history = new();
-    public static Dictionary<string, string> History => _history;
+    readonly static Dictionary<string?, string> _history = new();
+    public static Dictionary<string?, string> History => _history;
     public ConfigLoader(IConfiguration config)
     {
         _config = config;
     }
 
-    public string Load(string path, string defaultValue = "")
+    public string Load(string? path, string defaultValue = "")
     {
         var envValue = Environment.GetEnvironmentVariable(path);
         if (!string.IsNullOrWhiteSpace(envValue))

@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 
 namespace FCMicroservices.Components.BUS;
 
-public class Bus
+public class EnterpriseBus
 {
     public readonly static ConcurrentDictionary<string, Type> RegistryMessages = new();
 
@@ -19,7 +19,7 @@ public class Bus
     readonly ITracer _tracer;
     static IFunctionRegistry _registry;
 
-    public Bus(IServiceProvider provider, ITracer tracer)
+    public EnterpriseBus(IServiceProvider provider, ITracer tracer)
     {
         _provider = provider;
         _tracer = tracer;
