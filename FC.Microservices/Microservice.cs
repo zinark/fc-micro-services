@@ -79,8 +79,8 @@ public class Microservice
             services.AddSingleton<IConfigLoader, ConfigLoader>();
             services.AddSingleton<ITenantResolver, HttpTenantResolver>();
 
-            bool use_pubsub = _cfgLoader.Load("use_pubsub", "yes") == "yes";
-            bool use_tracer = _cfgLoader.Load("use_tracer", "yes") == "yes";
+            bool use_pubsub = _cfgLoader.Load("use_pubsub", "no") == "yes";
+            bool use_tracer = _cfgLoader.Load("use_tracer", "no") == "yes";
 
             if (use_tracer)
                 services.AddSingleton<ITracer, LogTracer>();
