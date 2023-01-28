@@ -5,7 +5,7 @@ namespace FCMicroservices.Extensions;
 
 public static class HashExtensions
 {
-    public static string HASH_PREFIX = "E049DFD4E5FC3E9AC41F6E8FA7D061473ABD681E7B10A402C0E3A46425504045";
+    public static readonly string HASH_PREFIX = "E049DFD4E5FC3E9AC41F6E8FA7D061473ABD681E7B10A402C0E3A46425504045";
     public static string AsHash(this object? target)
     {
         

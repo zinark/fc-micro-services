@@ -2,7 +2,7 @@
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 
-namespace FCMicroservices.Tests.Components.BUS.Events;
+namespace FCMicroservices.Tests.Components.EnterpriseBUS.Events;
 
 [TestClass]
 public class EventPublisherTests

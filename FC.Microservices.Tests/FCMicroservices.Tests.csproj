@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Messages\" />
+        <Folder Include="MicroMessages\" />
     </ItemGroup>
 
 </Project>

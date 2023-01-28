@@ -3,7 +3,7 @@
 namespace FCMicroservices.Tests.Messages.Events;
 
 [Event]
-public class HesaplamaBitti
+public class CalculationDone
 {
-    public int ToplamTutar { get; set; }
+    public int TotalAmount { get; set; }
 }

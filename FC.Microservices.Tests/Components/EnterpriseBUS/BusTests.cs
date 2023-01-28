@@ -1,4 +1,4 @@
-﻿namespace FCMicroservices.Tests.Components.BUS;
+﻿namespace FCMicroservices.Tests.Components.EnterpriseBUS;
 
 [TestClass]
 public class BusTests

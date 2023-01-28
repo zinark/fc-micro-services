@@ -1,7 +1,7 @@
 ﻿using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Utils;
 
-namespace Ticimax.Core.Microservice.Utils.Tests;
+namespace FCMicroservices.Tests.Utils;
 
 [TestClass]
 public partial class AssemblyUtilsTests

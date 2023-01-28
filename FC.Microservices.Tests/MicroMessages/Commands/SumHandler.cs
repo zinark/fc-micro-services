@@ -20,9 +20,9 @@ public class SumHandler : Handler<Sum, SumReply>
     {
         if (string.IsNullOrWhiteSpace(input.TenantId)) input.TenantId = _tenantResolver.Resolve();
 
-        publisher.Publish(new HesaplamaBitti
+        publisher.Publish(new CalculationDone
         {
-            ToplamTutar = input.X * input.Y
+            TotalAmount = input.X * input.Y
         });
 
         return new SumReply
