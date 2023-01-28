@@ -1,13 +1,17 @@
-﻿using FCMicroservices.Components.Configurations;
+﻿using System.Text;
+using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
+using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Middlewares;
 using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -23,6 +27,7 @@ public class Microservice
     private WebApplicationBuilder _builder;
     private IConfigLoader _cfgLoader;
     private IFunctionRegistry _functionRegistry;
+    private IFunctionRenderer _functionRenderer = new FunctionRenderer();
     private Action<IServiceCollection> _injectFunction = x => { };
     private Action<Probes> _probeFunction = x => { };
 
@@ -66,6 +71,12 @@ public class Microservice
         _app.UseMiddleware<JsonExceptionMiddleware>();
         var functionRegistry = _app.Services.GetService<IFunctionRegistry>();
         _app.Map("/", () => ApiInfo(functionRegistry));
+        _app.Map("/f/{f}", (string f) =>
+        {
+            var found = _functionRegistry.FindFunction(f);
+            return Results.Content(_functionRenderer.Render(found), "text/html", Encoding.UTF8);
+        });
+
         _appFunction(_app);
 
         var appReg = new AppRegistrations();

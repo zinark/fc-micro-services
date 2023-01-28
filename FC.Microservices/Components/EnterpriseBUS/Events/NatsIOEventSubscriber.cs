@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FCMicroservices.Components.FunctionRegistries;
+using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Utils;
 using NATS.Client;

@@ -1,18 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
+using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FCMicroservices.Components.FunctionRegistries;
+namespace FCMicroservices.Components.Functions;
 
 public class FunctionRegistry : IFunctionRegistry
 {
     public static readonly ConcurrentDictionary<string, (Type msg, Type reply)>
-        MessageReplyTypes_IndexedWithHandlerName = new();
+        MessageReplyTypesIndexedWithHandlerName = new();
 
-    public static readonly ConcurrentDictionary<string, Type> MessageTypes_IndexedWithMessageName = new();
-    public static readonly ConcurrentDictionary<string, Type> HandlerTypes_IndexedWithMessageName = new();
+    public static readonly ConcurrentDictionary<string, Type> MessageTypesIndexedWithMessageName = new();
+    public static readonly ConcurrentDictionary<string, Type> HandlerTypesIndexedWithMessageName = new();
     private readonly List<Function> _functions = new();
     private readonly IServiceCollection _services;
 
@@ -24,6 +25,29 @@ public class FunctionRegistry : IFunctionRegistry
     }
 
     public IEnumerable<Function> ListFunctions => _functions;
+
+    public Function FindFunction(string messageName)
+    {
+        var found = ListFunctions
+            .Where(x => x.MessageName.ToLowerInvariant() == messageName.ToLowerInvariant())
+            .FirstOrDefault();
+
+        if (found == null)
+        {
+            var nearest = ListFunctions
+                .Where(x => x.MessageName.ToLowerInvariant().Contains(messageName.ToLowerInvariant()))
+                .Select((x => x.MessageName))
+                .ToList();
+
+            throw new ApiException("{0} isimli mesaj yok. Fakat benzer olanlar {1}", new
+            {
+                messageName,
+                Nearest = string.Join(" ", nearest)
+            });
+        }
+
+        return found;
+    }
 
     public void Init<T>(Func<Type, Function> fFunctionBuilder)
     {
@@ -38,9 +62,9 @@ public class FunctionRegistry : IFunctionRegistry
         {
             var f = fFunctionBuilder(type);
             _functions.Add(f);
-            MessageTypes_IndexedWithMessageName[f.MessageName] = f.MessageType;
-            HandlerTypes_IndexedWithMessageName[f.MessageName] = f.HandlerType;
-            MessageReplyTypes_IndexedWithHandlerName[f.HandlerName] = (f.MessageType, f.ReplyType);
+            MessageTypesIndexedWithMessageName[f.MessageName] = f.MessageType;
+            HandlerTypesIndexedWithMessageName[f.MessageName] = f.HandlerType;
+            MessageReplyTypesIndexedWithHandlerName[f.HandlerName] = (f.MessageType, f.ReplyType);
             _services.AddTransient(type);
         }
     }
@@ -48,18 +72,18 @@ public class FunctionRegistry : IFunctionRegistry
 
     public (bool success, Type handlerType) FindHandlerType(string messageName)
     {
-        var exists = HandlerTypes_IndexedWithMessageName.ContainsKey(messageName);
+        var exists = HandlerTypesIndexedWithMessageName.ContainsKey(messageName);
         if (!exists) return (false, null);
 
-        return (true, HandlerTypes_IndexedWithMessageName[messageName]);
+        return (true, HandlerTypesIndexedWithMessageName[messageName]);
     }
 
     public (bool success, Type messageType) FindMessage(string messageName)
     {
-        var exists = MessageTypes_IndexedWithMessageName.ContainsKey(messageName);
+        var exists = MessageTypesIndexedWithMessageName.ContainsKey(messageName);
         if (!exists) return (false, null);
 
-        return (true, MessageTypes_IndexedWithMessageName[messageName]);
+        return (true, MessageTypesIndexedWithMessageName[messageName]);
     }
 
     public object Info()
@@ -69,27 +93,23 @@ public class FunctionRegistry : IFunctionRegistry
         var queries = MakeFunctions<QueryAttribute>(functions);
         var events = MakeFunctions<EventAttribute>(functions);
 
-        var messageSignatures = functions.Select(x => new
-        {
-            Message = x.MessageName,
-            MessageSample = x.MessageType != null ? Activator.CreateInstance(x.MessageType) : null,
-            Handler = x.HandlerName,
-            Reply = x.ReplyName,
-            ReplySample = x.ReplyType != null ? Activator.CreateInstance(x.ReplyType) : null
-        }).ToList();
-
         return new
         {
-            Distribution =
-                $"[C]={commands.Count()} [Q]={queries.Count()} [E]={events.Count()} / In Total {functions.Count()}",
-            Registry = commands.Concat(queries).Concat(events).GroupBy(x => x.Item1)
-                .Select(x => new
+            TotalFunctions = functions.Count(),
+            Distribution = $"[C]={commands.Count()} [Q]={queries.Count()} [E]={events.Count()}",
+            Functions = commands.Concat(queries).Concat(events)
+                .GroupBy(x => x.Namespace)
+                .Select(ns => new
                 {
-                    Namespace = x.Key,
-                    Total = x.Count(),
-                    Messages = x.Select(t => t.Item2).ToList()
-                }),
-            MessageSignatures = messageSignatures
+                    Namespace = ns.Key,
+                    // Total = ns.Count(),
+                    Messages = ns.GroupBy(x => x.MessageType).Select(x => new
+                    {
+                        MessageType = x.Key,
+                        // Quantity = x.Count(),
+                        Messages = x.Select(x=>x.Url).ToList()
+                    })
+                })
         };
     }
 
@@ -114,7 +134,7 @@ public class FunctionRegistry : IFunctionRegistry
             HandlerType = handlerType,
             HandlerName = handlerName,
             ReplyType = replyType,
-            ReplyName = replyName
+            ReplyName = replyName,
         };
     }
 
@@ -139,20 +159,28 @@ public class FunctionRegistry : IFunctionRegistry
         };
     }
 
-    private static List<(string, string)> MakeFunctions<TAtt>(IOrderedEnumerable<Function> functions)
+    class RegisteredFunctionInfo
+    {
+        public string Namespace { get; set; }
+        public string MessageType { get; set; }
+        public string Url { get; set; }
+        public string Description { get; set; }
+    }
+
+    private static List<RegisteredFunctionInfo> MakeFunctions<TAtt>(IOrderedEnumerable<Function> functions)
         where TAtt : Attribute
     {
-        var prefix = "";
-        if (typeof(TAtt).Name == typeof(CommandAttribute).Name) prefix = "[C] ";
-        if (typeof(TAtt).Name == typeof(QueryAttribute).Name) prefix = "[Q] ";
-        if (typeof(TAtt).Name == typeof(EventAttribute).Name) prefix = "[E] ";
         return functions
             .Where(x => x.MessageType.HasAttribute<TAtt>())
-            .Select(x => (x.MessageType?.Namespace,
-                    prefix + x.MessageType?.Namespace + "." + x.MessageType?.Name +
-                    " --> " + x.HandlerType?.Name +
-                    "() ==> " + x.ReplyType?.Name
-                ))
+            .Select(x => new RegisteredFunctionInfo()
+            {
+                Namespace = x.MessageType?.Namespace,
+                Description = x.MicroMessageType + " " + x.MessageType?.Namespace + "." + x.MessageType?.Name +
+                              " --> " + x.HandlerType?.Name + "() " +
+                              " " + x.ReplyType?.Name,
+                Url = "/f/" + x.MessageName,
+                MessageType = x.MicroMessageType
+            })
             .ToList();
     }
 }
