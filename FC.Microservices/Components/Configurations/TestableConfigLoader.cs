@@ -1,10 +1,9 @@
-﻿namespace FCMicroservices.Components.Configurations
+﻿namespace FCMicroservices.Components.Configurations;
+
+public class TestableConfigLoader : IConfigLoader
 {
-    public class TestableConfigLoader : IConfigLoader
+    public string Load(string? path, string? defaultValue = null)
     {
-        public string Load(string? path, string? defaultValue = null)
-        {
-            return defaultValue ?? "no";
-        }
+        return defaultValue ?? "no";
     }
 }

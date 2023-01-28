@@ -1,7 +1,6 @@
-﻿namespace FCMicroservices.Components.Configurations
+﻿namespace FCMicroservices.Components.Configurations;
+
+public interface IConfigLoader
 {
-    public interface IConfigLoader
-    {
-        string Load(string? path, string defaultValue = "");
-    }
+    string Load(string? path, string defaultValue = "");
 }

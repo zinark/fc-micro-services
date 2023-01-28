@@ -1,14 +1,23 @@
-﻿using Grpc.Core;
-using Google.Protobuf;
-using System.Text;
-using FCMicroservices.Extensions;
-using FCMicroservices.Components.Loggers;
+﻿using System.Text;
 using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.Loggers;
+using FCMicroservices.Extensions;
+using Google.Protobuf;
+using Grpc.Core;
 
 namespace FCMicroservices;
 
 public class GrpcMicroService : MicroService.MicroServiceBase
 {
+    private readonly EnterpriseBus _enterpriseBus;
+    private readonly ITracer _tracer;
+
+    public GrpcMicroService(EnterpriseBus enterpriseBus, ITracer tracer)
+    {
+        _enterpriseBus = enterpriseBus;
+        _tracer = tracer;
+    }
+
     public ByteString ToByteString(Stream stream)
     {
         byte[] b;
@@ -17,33 +26,26 @@ public class GrpcMicroService : MicroService.MicroServiceBase
             stream.CopyTo(memoryStream);
             b = memoryStream.ToArray();
         }
+
         return ByteString.CopyFrom(b);
     }
+
     public ByteString ToByteString(string text)
     {
-        byte[] b = Encoding.UTF8.GetBytes(text).ToArray();
+        var b = Encoding.UTF8.GetBytes(text).ToArray();
         return ByteString.CopyFrom(b);
-    }
-
-    private EnterpriseBus _enterpriseBus;
-    private ITracer _tracer;
-
-    public GrpcMicroService(EnterpriseBus enterpriseBus, ITracer tracer)
-    {
-        _enterpriseBus = enterpriseBus;
-        _tracer = tracer;
     }
 
     public override Task<ByteReply> ByteExecute(ByteCommand request, ServerCallContext context)
     {
-        var cmd = new Command()
+        var cmd = new Command
         {
             Json = ParseByteString(request.Json),
             Type = ParseByteString(request.Type)
         };
-        Reply reply = Execute(cmd, context).Result;
+        var reply = Execute(cmd, context).Result;
 
-        var byteReply = new ByteReply()
+        var byteReply = new ByteReply
         {
             Error = reply.Error,
             Json = ToByteString(reply.Json),
@@ -62,37 +64,36 @@ public class GrpcMicroService : MicroService.MicroServiceBase
     public override Task<ByteReplyList> BatchByteExecute(ByteCommandList request, ServerCallContext context)
     {
         var result = new ByteReplyList();
-        foreach (ByteCommand cmd in request.Commands)
+        foreach (var cmd in request.Commands)
         {
             var reply = ByteExecute(cmd, context).Result;
             result.Replies.Add(reply);
-
         }
-        return Task.FromResult(result);
 
+        return Task.FromResult(result);
     }
 
     public override Task<ReplyList> BatchExecute(CommandList request, ServerCallContext context)
     {
         var result = new ReplyList();
-        foreach (Command cmd in request.Commands)
+        foreach (var cmd in request.Commands)
         {
             var reply = Execute(cmd, context).Result;
             result.Replies.Add(reply);
-
         }
+
         return Task.FromResult(result);
     }
 
     public override Task<ReplyList> BatchQuery(FilterList request, ServerCallContext context)
     {
         var result = new ReplyList();
-        foreach (Filter filter in request.Filters)
+        foreach (var filter in request.Filters)
         {
             var reply = Query(filter, context).Result;
             result.Replies.Add(reply);
-
         }
+
         return Task.FromResult(result);
     }
 
@@ -102,12 +103,11 @@ public class GrpcMicroService : MicroService.MicroServiceBase
         var type = request.Type;
 
 
-
         try
         {
             EnterpriseBus.CheckAttribute<QueryAttribute>(type);
             var reply = _enterpriseBus.Handle(type, js);
-            return new Reply()
+            return new Reply
             {
                 Success = true,
                 Type = reply.GetType().FullName,
@@ -116,7 +116,7 @@ public class GrpcMicroService : MicroService.MicroServiceBase
         }
         catch (ApiException ex)
         {
-            return new Reply()
+            return new Reply
             {
                 Success = false,
                 Error = $"{ex.Message}\r\n{ex.StackTrace}",
@@ -126,7 +126,7 @@ public class GrpcMicroService : MicroService.MicroServiceBase
         }
         catch (Exception ex)
         {
-            return new Reply()
+            return new Reply
             {
                 Success = false,
                 Error = $"{ex.Message}\r\n{ex.StackTrace}",
@@ -138,13 +138,13 @@ public class GrpcMicroService : MicroService.MicroServiceBase
 
     public override Task<Reply> Execute(Command request, ServerCallContext context)
     {
-        string type = request.Type;
-        string js = request.Json;
+        var type = request.Type;
+        var js = request.Json;
 
-        _tracer.Trace($"Execute", new Dictionary<string, object>()
+        _tracer.Trace("Execute", new Dictionary<string, object>
         {
             { "Type", type },
-            {  "request.json", js }
+            { "request.json", js }
         });
 
         try
@@ -152,19 +152,19 @@ public class GrpcMicroService : MicroService.MicroServiceBase
             EnterpriseBus.CheckAttribute<CommandAttribute>(type);
 
             var reply = _enterpriseBus.Handle(type, js);
-            var result = new Reply()
+            var result = new Reply
             {
                 Success = true,
                 Type = reply.GetType().FullName,
                 Json = reply.ToJson()
             };
 
-            _tracer.Trace($"Reply - OK", "reply", result.ToJson(true));
+            _tracer.Trace("Reply - OK", "reply", result.ToJson(true));
             return result.AsTask();
         }
         catch (ApiException ex)
         {
-            var reply = new Reply()
+            var reply = new Reply
             {
                 Success = false,
                 Error = $"{ex.Message}\r\n{ex.StackTrace}",
@@ -172,13 +172,13 @@ public class GrpcMicroService : MicroService.MicroServiceBase
                 Type = ex.GetType().Name
             };
 
-            _tracer.Trace($"Reply - APIEXCEPTION", "reply", reply.ToJson(true));
+            _tracer.Trace("Reply - APIEXCEPTION", "reply", reply.ToJson(true));
 
             return reply.AsTask();
         }
         catch (Exception ex)
         {
-            var reply = new Reply()
+            var reply = new Reply
             {
                 Success = false,
                 Error = $"{ex.Message}\r\n{ex.StackTrace}",
@@ -186,11 +186,10 @@ public class GrpcMicroService : MicroService.MicroServiceBase
                 Type = ex.GetType().Name
             };
 
-            _tracer.Trace($"Reply - EXCEPTION", "reply", reply.ToJson(true));
+            _tracer.Trace("Reply - EXCEPTION", "reply", reply.ToJson(true));
 
             return reply.AsTask();
         }
-
     }
 
     public override Task<MicroMessageContracts> Contracts(None request, ServerCallContext context)

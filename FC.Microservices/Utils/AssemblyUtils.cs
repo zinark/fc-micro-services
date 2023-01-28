@@ -11,7 +11,7 @@ public static class AssemblyUtils
 
     public static IEnumerable<Type> SearchTypes()
     {
-        var restirectedNames = new List<string>()
+        var restirectedNames = new List<string>
         {
             "System.",
             "Microsoft.",
@@ -26,10 +26,8 @@ public static class AssemblyUtils
         };
 
         var q = AppDomain.CurrentDomain.GetAssemblies().AsQueryable();
-        foreach (var name in restirectedNames)
-        {
-            q = q.Where(x => !x.FullName.StartsWith(name));
-        };
+        foreach (var name in restirectedNames) q = q.Where(x => !x.FullName.StartsWith(name));
+        ;
 
         var asmlist = q.ToArray();
 
@@ -43,7 +41,7 @@ public static class AssemblyUtils
         //{
         foreach (var refAsm in entryAsm.GetReferencedAssemblies())
         {
-            if (startsWith(refAsm.Name, restirectedNames)) continue;
+            if (StartsWith(refAsm.Name, restirectedNames)) continue;
 
 
             var refNames = refList.Select(x => x.GetName().Name).ToList();
@@ -59,12 +57,11 @@ public static class AssemblyUtils
         return result;
     }
 
-    private static bool startsWith(string? name, List<string> restirectedNames)
+    private static bool StartsWith(string? name, List<string> restirectedNames)
     {
         foreach (var rest in restirectedNames)
-        {
-            if (name.StartsWith(rest)) return true;
-        }
+            if (name.StartsWith(rest))
+                return true;
         return false;
     }
 
@@ -74,22 +71,15 @@ public static class AssemblyUtils
 
         Dictionary<string, Assembly> asmDict = new();
 
-        var asmList = new List<Assembly>() { Assembly.GetCallingAssembly() };
+        var asmList = new List<Assembly> { Assembly.GetCallingAssembly() };
         asmList.AddRange(assemblies);
 
-        foreach (Assembly asm in asmList)
-        {
-            asmDict[asm.FullName] = asm;
-        }
+        foreach (var asm in asmList) asmDict[asm.FullName] = asm;
 
-        foreach (Assembly asm in asmDict.Values)
+        foreach (var asm in asmDict.Values)
         {
             var types = ListTypes(asm);
-            if (types != null && types.Length > 0)
-            {
-                result.AddRange(types);
-            }
-
+            if (types != null && types.Length > 0) result.AddRange(types);
         }
 
         return result;
@@ -100,7 +90,7 @@ public static class AssemblyUtils
         try
         {
             var result = asm.GetExportedTypes()
-                .Where(x => x.IsClass == true)
+                .Where(x => x.IsClass)
                 .ToArray();
             return result;
         }
@@ -108,6 +98,7 @@ public static class AssemblyUtils
         {
             Debug.WriteLine($"INFO : {asm.FullName} assembly'sinden type listesi alirken problem olustu. {ex.Message}");
         }
+
         return null;
     }
 

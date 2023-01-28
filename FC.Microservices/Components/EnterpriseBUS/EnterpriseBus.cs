@@ -1,23 +1,20 @@
-﻿using FCMicroservices.Components.FunctionRegistries;
+﻿using System.Collections.Concurrent;
+using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Loggers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using Newtonsoft.Json;
-
-using System.Collections.Concurrent;
 
 namespace FCMicroservices.Components.BUS;
 
 public class EnterpriseBus
 {
-    public readonly static ConcurrentDictionary<string, Type> RegistryMessages = new();
+    public static readonly ConcurrentDictionary<string, Type> RegistryMessages = new();
+    private static IFunctionRegistry _registry;
 
-    readonly IServiceProvider _provider;
-    readonly ITracer _tracer;
-    static IFunctionRegistry _registry;
+    private readonly IServiceProvider _provider;
+    private readonly ITracer _tracer;
 
     public EnterpriseBus(IServiceProvider provider, ITracer tracer)
     {
@@ -31,34 +28,46 @@ public class EnterpriseBus
         _registry.Init<IHandler>(FunctionRegistry.RegisterCommandQueries);
     }
 
-    public Task<TReply> HandleAsync<T, TReply>(T msg) => Task.FromResult(Handle<T, TReply>(msg));
-    public Task<object> HandleAsync<T>(T msg) => Task.FromResult(Handle(msg));
-    public Task<object> HandleAsync(string msgType, string msgBody) => Task.FromResult(Handle(msgType, msgBody));
+    public Task<TReply> HandleAsync<T, TReply>(T msg)
+    {
+        return Task.FromResult(Handle<T, TReply>(msg));
+    }
+
+    public Task<object> HandleAsync<T>(T msg)
+    {
+        return Task.FromResult(Handle(msg));
+    }
+
+    public Task<object> HandleAsync(string msgType, string msgBody)
+    {
+        return Task.FromResult(Handle(msgType, msgBody));
+    }
+
     public TReply Handle<T, TReply>(T msg)
     {
         return (TReply)Handle(msg);
     }
+
     public object Handle<T>(T msg)
     {
         var reply = Handle(typeof(T).FullName, msg.ToJson());
         return reply;
     }
+
     public object Handle(string messageType, string messageBody)
     {
         var (success, msgType) = _registry.FindMessage(messageType);
         if (!success)
-        {
             throw new ApiException("Verilen isimde bir tip yok! {0} {1} {2}", new
             {
                 messageType,
                 messageBody,
                 registeredTypes = _registry.ListFunctions.Select(x => x.MessageName).ToList()
             });
-        }
 
         //var msgType = RegistryMessages[messageType];
 
-        _tracer.Trace("Handle", new Dictionary<string, object>()
+        _tracer.Trace("Handle", new Dictionary<string, object>
         {
             { "ns", msgType.Namespace },
             { "type", messageType },
@@ -78,7 +87,7 @@ public class EnterpriseBus
 
         var reply = handler.Handle(input);
 
-        _tracer.Trace("Reply", new Dictionary<string, object>()
+        _tracer.Trace("Reply", new Dictionary<string, object>
         {
             { "ns", reply.GetType().Namespace },
             { "type", reply.GetType().Name },
@@ -92,9 +101,6 @@ public class EnterpriseBus
         var (success, messageType) = _registry.FindMessage(msgType);
         //var type = RegistryMessages[msgType];
         if (!messageType.HasAttribute<T>())
-        {
             throw new ApiException($"{msgType}, [{typeof(T).Name}] attribute'e sahip bir micro-message olmali!");
-        }
     }
-
 }

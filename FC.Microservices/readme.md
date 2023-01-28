@@ -1,6 +1,7 @@
 ﻿# Creating New Microservice
 
-The following service package should be connected to a newly created service. First create a brand new web-api application in your ide. Then install this nuget.
+The following service package should be connected to a newly created service. First create a brand new web-api
+application in your ide. Then install this nuget.
 
 ```
 nuget install fc.micro.services
@@ -8,7 +9,8 @@ nuget install fc.micro.services
 
 ## Program.cs
 
-A minimum start can be made to the Program.cs file as follows. The dbcontext needed by the microservice is given and it is run with Run() method. By default, the connection string is tried to be retrieved by searching for a key called "DB".
+A minimum start can be made to the Program.cs file as follows. The dbcontext needed by the microservice is given and it
+is run with Run() method. By default, the connection string is tried to be retrieved by searching for a key called "DB".
 
 ```cs
 Microservice
@@ -21,7 +23,8 @@ Microservice
 
 ## Events / Subcriptions
 
-If we want the service to listen to an event, a code like the one below will suffice. It listens for the ``CalculationFinished`` event and executes ``CalculationFinishedSubscription`` when it receives the message.
+If we want the service to listen to an event, a code like the one below will suffice. It listens for
+the ``CalculationFinished`` event and executes ``CalculationFinishedSubscription`` when it receives the message.
 
 ```cs
 Microservice
@@ -66,24 +69,26 @@ namespace fc.micro.services.Hello.Microservice.Messages.Events
 
 ```
 
-
-
 ## Probe'lar
 
-We understand the status of a service with probes. The following are the default values. Here is an example of the code that says I am healthy in any case. Probes are used during virtualization. [Configure Liveness, Readiness and Startup Probes | Kubernetes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
- 
+We understand the status of a service with probes. The following are the default values. Here is an example of the code
+that says I am healthy in any case. Probes are used during
+virtualization. [Configure Liveness, Readiness and Startup Probes | Kubernetes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 
 * Liveness http://localhost:5000/liveness
-  
-  * There may be cases where a pod opens very slowly. Killing with Liveness is prevented. If Liveness is false, it will be deleted and restarted.
+
+    * There may be cases where a pod opens very slowly. Killing with Liveness is prevented. If Liveness is false, it
+      will be deleted and restarted.
 
 * Readiness http://localhost:5000/readiness
-  
-  * This service allows you to decide whether to receive a request or not. It cannot be done. Shall I provide request traffic to the pod? says kubernetes
+
+    * This service allows you to decide whether to receive a request or not. It cannot be done. Shall I provide request
+      traffic to the pod? says kubernetes
 
 * Startup http://localhost:5000/startup
-  
-  * It allows to query whether the application is ready or not. Liveness and readiness are treated as false in the startup = false case. If everything is ok, Kubernetes deploys the pod to the network.
+
+    * It allows to query whether the application is ready or not. Liveness and readiness are treated as false in the
+      startup = false case. If everything is ok, Kubernetes deploys the pod to the network.
 
 ```cs
 Microservice
@@ -105,7 +110,8 @@ With ConfigLoader, it is provided to get settings first from environment and the
 var a = IConfigloader.Load ("a", "1");
 ```
 
-In the above case, if the a variable is passed in appsettings, it takes the value there. It is useful for us when debugging while working in local.
+In the above case, if the a variable is passed in appsettings, it takes the value there. It is useful for us when
+debugging while working in local.
 
 ```json
 {
@@ -113,7 +119,8 @@ In the above case, if the a variable is passed in appsettings, it takes the valu
 }
 ```
 
-The variable a is overwritten to 200. If it is not in appsettings, it may come from environment. This happens mostly with docker run.
+The variable a is overwritten to 200. If it is not in appsettings, it may come from environment. This happens mostly
+with docker run.
 
 ```
 docker run microservice -e a 100
@@ -121,10 +128,8 @@ docker run microservice -e a 100
 
 The variable a will be crushed to 100 in the environment it is running.
 
-
-
-The default value of 1 is the value to be assigned if nothing is found. It is optional, if it is not given, it means no default value. And we force it to be in env and appsettings.
-
+The default value of 1 is the value to be assigned if nothing is found. It is optional, if it is not given, it means no
+default value. And we force it to be in env and appsettings.
 
 ## Settings for api
 
@@ -132,7 +137,8 @@ The default value of 1 is the value to be assigned if nothing is found. It is op
 
 * use_tracer : "yes" / "no"
 
-Components to be used in appsettings.json can be determined. If Event/Subscription is to be used, use_pubsub must be marked yes. If trace is to be done, use_tracer must be yes in the same way.
+Components to be used in appsettings.json can be determined. If Event/Subscription is to be used, use_pubsub must be
+marked yes. If trace is to be done, use_tracer must be yes in the same way.
 
 ```
 
@@ -140,11 +146,10 @@ Components to be used in appsettings.json can be determined. If Event/Subscripti
     "use_tracer": "yes"
 ```
 
-
-
 ## Kestrel Endpoints
 
-To change the endpoints, the Kestrel part in appsettings.json can be given as follows. Which ports are required for GRPC and HTTP.
+To change the endpoints, the Kestrel part in appsettings.json can be given as follows. Which ports are required for GRPC
+and HTTP.
 
 ```
  "Kestrel": {
@@ -160,7 +165,6 @@ To change the endpoints, the Kestrel part in appsettings.json can be given as fo
         }
     },
 ```
-
 
 When the Console application runs, it will give an output like the one below.
 
@@ -207,7 +211,8 @@ info: Microsoft.Hosting.Lifetime[0]
 
 # Enterprise Service BUS
 
-We run commands and queries with the bus. When we need to throw an event, we can broadcast or look at the result of another service with BUSClient.
+We run commands and queries with the bus. When we need to throw an event, we can broadcast or look at the result of
+another service with BUSClient.
 
 ### Command:
 
@@ -223,8 +228,6 @@ We run commands and queries with the bus. When we need to throw an event, we can
 
 ### Publisher usage on BUS
 
-
-
 # Connecting other micro-services to the microservice
 
 In order to include and call messages from other microservices in the project, the following package must be installed.
@@ -234,7 +237,6 @@ nuget install [TODO:MicroMessages]
 ```
 
 ### BUS and BUSClient example
-
 
 # Docker microservice and send to harbor
 

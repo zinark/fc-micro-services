@@ -1,10 +1,9 @@
-﻿namespace FCMicroservices.Extensions
+﻿namespace FCMicroservices.Extensions;
+
+public static class TaskExtensions
 {
-    public static class TaskExtensions
+    public static Task<T> AsTask<T>(this T given)
     {
-        public static Task<T> AsTask<T>(this T given)
-        {
-            return Task.FromResult(given);
-        }
+        return Task.FromResult(given);
     }
 }

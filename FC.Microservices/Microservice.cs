@@ -2,24 +2,34 @@
 using FCMicroservices.Components.BUS.Events;
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.CustomerDomainResolvers;
+using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Loggers;
 using FCMicroservices.Components.Middlewares;
 using FCMicroservices.Components.Networks;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using Newtonsoft.Json;
-
 
 namespace FCMicroservices;
 
 public class Microservice
 {
+    private readonly List<Type> _subscriptions = new();
+    private WebApplication _app;
+    private Action<WebApplication> _appFunction = x => { };
+
+    private WebApplicationBuilder _builder;
+    private IConfigLoader _cfgLoader;
+    private IFunctionRegistry _functionRegistry;
+    private Action<IServiceCollection> _injectFunction = x => { };
+    private Action<Probes> _probeFunction = x => { };
+
+    private Action<IServiceCollection> _svcFunction = x => { };
+
     public Microservice Run()
     {
         // SERVICES
@@ -75,12 +85,12 @@ public class Microservice
         void DefaultInjections(IServiceCollection services)
         {
             services.AddSingleton<EnterpriseBus>();
-            services.AddTransient<INetTools, DefaultNetTools>();
+            services.AddTransient<INetworkUtils, DefaultNetworkUtils>();
             services.AddSingleton<IConfigLoader, ConfigLoader>();
             services.AddSingleton<ITenantResolver, HttpTenantResolver>();
 
-            bool use_pubsub = _cfgLoader.Load("use_pubsub", "no") == "yes";
-            bool use_tracer = _cfgLoader.Load("use_tracer", "no") == "yes";
+            var use_pubsub = _cfgLoader.Load("use_pubsub", "no") == "yes";
+            var use_tracer = _cfgLoader.Load("use_tracer", "no") == "yes";
 
             if (use_tracer)
                 services.AddSingleton<ITracer, LogTracer>();
@@ -89,7 +99,7 @@ public class Microservice
 
             if (use_pubsub)
             {
-                string url = _cfgLoader.Load("PUBSUB_URL", "http://localhost:4222");
+                var url = _cfgLoader.Load("PUBSUB_URL", "http://localhost:4222");
 
                 services.AddTransient<IEventPublisher, EventPublisher>(x =>
                 {
@@ -117,14 +127,13 @@ public class Microservice
             EnterpriseBus.Init(_functionRegistry);
             EventSubscriber.Init(_functionRegistry);
         }
-
     }
 
     public static Microservice Create(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         ConfigureThreadPool();
-        return new Microservice()
+        return new Microservice
         {
             _builder = builder,
             _cfgLoader = new ConfigLoader(builder.Configuration)
@@ -140,7 +149,7 @@ public class Microservice
     public Microservice UseDbContext<T>() where T : DbContext
     {
         var services = _builder.Services;
-        string conn_str = _cfgLoader.Load("DB");
+        var conn_str = _cfgLoader.Load("DB");
         services.AddDbContextFactory<T>(x => x.UseNpgsql(conn_str).UseSnakeCaseNamingConvention());
         services.AddDbContext<T>(x => x.UseNpgsql(conn_str).UseSnakeCaseNamingConvention());
         return this;
@@ -176,7 +185,7 @@ public class Microservice
         return this;
     }
 
-    object ApiInfo(IFunctionRegistry registry)
+    private object ApiInfo(IFunctionRegistry registry)
     {
         return new
         {
@@ -186,16 +195,4 @@ public class Microservice
             Registry = registry.Info()
         };
     }
-
-    WebApplicationBuilder _builder;
-    WebApplication _app;
-    IFunctionRegistry _functionRegistry;
-    IConfigLoader _cfgLoader;
-    List<Type> _subscriptions = new();
-
-    Action<IServiceCollection> _svcFunction = (x) => { };
-    Action<WebApplication> _appFunction = (x) => { };
-    Action<IServiceCollection> _injectFunction = (x) => { };
-    Action<Probes> _probeFunction = (x) => { };
-
 }

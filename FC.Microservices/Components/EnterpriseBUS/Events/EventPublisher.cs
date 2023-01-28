@@ -1,15 +1,15 @@
-﻿using FCMicroservices.Extensions;
-
+﻿using System.Text;
+using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.BUS.Events;
+using FCMicroservices.Extensions;
 using NATS.Client;
 
-using System.Text;
-
-namespace FCMicroservices.Components.BUS.Events;
+namespace FCMicroservices.Components.EnterpriseBUS.Events;
 
 public class EventPublisher : IEventPublisher
 {
-    string _url;
-    static readonly ConnectionFactory _factory = new();
+    private static readonly ConnectionFactory _factory = new();
+    private readonly string _url;
 
     public EventPublisher(string url)
     {

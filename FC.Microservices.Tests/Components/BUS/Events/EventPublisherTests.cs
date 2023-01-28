@@ -1,27 +1,21 @@
 ﻿using FCMicroservices.Components.BUS.Events;
+using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.Loggers;
 using FCMicroservices.Extensions;
 
 namespace FCMicroservices.Tests.Components.BUS.Events;
 
-[TestClass()]
+[TestClass]
 public class EventPublisherTests
 {
-    const string URL = "http://localhost:4222";
+    private const string URL = "http://localhost:4222";
 
-    [Event]
-    public class SiparisOlusturuldu
-    {
-        public int OrderId { get; set; }
-        public double TotalAmount { get; set; }
-    }
-
-    [TestMethod()]
+    [TestMethod]
     public void PublishTest()
     {
         using var sub = new EventSubscriber(null, new NoTracer(), URL);
 
-        bool messageReceived = false;
+        var messageReceived = false;
 
         sub.Subscribe<SiparisOlusturuldu>(x =>
         {
@@ -29,7 +23,7 @@ public class EventPublisherTests
             messageReceived = true;
         });
 
-        var evnt = new SiparisOlusturuldu()
+        var evnt = new SiparisOlusturuldu
         {
             OrderId = 1,
             TotalAmount = 100
@@ -38,5 +32,12 @@ public class EventPublisherTests
 
         Thread.Sleep(1000);
         Assert.IsTrue(messageReceived);
+    }
+
+    [Event]
+    public class SiparisOlusturuldu
+    {
+        public int OrderId { get; set; }
+        public double TotalAmount { get; set; }
     }
 }

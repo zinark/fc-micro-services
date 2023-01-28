@@ -1,34 +1,30 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace FCMicroservices.Components.CustomerDomainResolvers
+namespace FCMicroservices.Components.CustomerDomainResolvers;
+
+public class HttpTenantResolver : ITenantResolver
 {
-    public class HttpTenantResolver : ITenantResolver
+    private static readonly string[] DEFAULT_EXPECTED_HEADERS =
     {
-        private readonly IHttpContextAccessor accessor;
-        static readonly string[] DEFAULT_EXPECTED_HEADERS = new string[]
-        {
-            "X-tenant", "X-DomainName", "X-domain-name"
-        };
+        "X-tenant", "X-DomainName", "X-domain-name"
+    };
 
-        public HttpTenantResolver(IHttpContextAccessor accessor)
-        {
-            this.accessor = accessor;
-        }
+    private readonly IHttpContextAccessor accessor;
 
-        public string Resolve()
-        {
-            if (accessor == null) return "<undefined tenant>";
-            if (accessor.HttpContext == null) return "<undefined tenant>";
+    public HttpTenantResolver(IHttpContextAccessor accessor)
+    {
+        this.accessor = accessor;
+    }
 
-            foreach (var name in DEFAULT_EXPECTED_HEADERS)
-            {
-                if (accessor.HttpContext.Request.Headers.ContainsKey(name))
-                {
-                    return accessor.HttpContext.Request.Headers[name];
-                }
-            }
+    public string Resolve()
+    {
+        if (accessor == null) return "<undefined tenant>";
+        if (accessor.HttpContext == null) return "<undefined tenant>";
 
-            return "<undefined tenant>";
-        }
+        foreach (var name in DEFAULT_EXPECTED_HEADERS)
+            if (accessor.HttpContext.Request.Headers.ContainsKey(name))
+                return accessor.HttpContext.Request.Headers[name];
+
+        return "<undefined tenant>";
     }
 }

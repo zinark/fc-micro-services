@@ -1,7 +1,6 @@
-﻿namespace FCMicroservices.Components.CustomerDomainResolvers
+﻿namespace FCMicroservices.Components.CustomerDomainResolvers;
+
+public interface ITenantResolver
 {
-    public interface ITenantResolver
-    {
-        string Resolve();
-    }
+    string Resolve();
 }

@@ -1,13 +1,12 @@
 ﻿using FCMicroservices.Components.BUS;
 
-namespace Ticimax.Core.Microservice.Utils.Tests
+namespace Ticimax.Core.Microservice.Utils.Tests;
+
+public partial class AssemblyUtilsTests
 {
-    public partial class AssemblyUtilsTests
+    [Command]
+    public class FooCommand
     {
-        [Command]
-        public class FooCommand
-        {
-            public int X { get; set; }
-        }
+        public int X { get; set; }
     }
 }

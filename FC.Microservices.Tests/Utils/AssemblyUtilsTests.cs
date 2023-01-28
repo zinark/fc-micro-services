@@ -1,14 +1,12 @@
 ﻿using FCMicroservices.Components.BUS;
 using FCMicroservices.Utils;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace Ticimax.Core.Microservice.Utils.Tests;
 
-[TestClass()]
+[TestClass]
 public partial class AssemblyUtilsTests
 {
-    [TestMethod()]
+    [TestMethod]
     public void SearchTypesTest()
     {
         Assert.Fail();

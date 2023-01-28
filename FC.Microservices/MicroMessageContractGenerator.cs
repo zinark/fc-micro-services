@@ -1,21 +1,16 @@
-﻿using FCMicroservices.Components.BUS;
+﻿using System.Text;
+using FCMicroservices.Components.BUS;
 using FCMicroservices.Utils;
-
 using Google.Protobuf;
-
+using Google.Protobuf.WellKnownTypes;
+using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
-
-using System.Reflection;
-using System.Text;
+using Type = System.Type;
 
 namespace FCMicroservices;
 
 public class MicroMessageContractGenerator
 {
-    public MicroMessageContractGenerator()
-    {
-    }
-
     public MicroMessageContracts Generate()
     {
         var allTypes = AssemblyUtils.SearchTypes();
@@ -48,9 +43,9 @@ public class MicroMessageContractGenerator
         return result;
     }
 
-    CSharpGeneratorSettings CodeSettings(string ns)
+    private CSharpGeneratorSettings CodeSettings(string ns)
     {
-        return new CSharpGeneratorSettings()
+        return new CSharpGeneratorSettings
         {
             Namespace = ns,
             HandleReferences = false,
@@ -59,7 +54,7 @@ public class MicroMessageContractGenerator
             // TODO : TemplateFactory = Template icin liquid dili kullanilmis. Ekleyebiliriz bize ozel istersek
             GenerateDataAnnotations = false,
             GenerateDefaultValues = false,
-            SchemaType = NJsonSchema.SchemaType.OpenApi3,
+            SchemaType = SchemaType.OpenApi3,
             DictionaryBaseType = "System.Collections.Generic.IDictionary",
             DictionaryType = "System.Collections.Generic.IDictionary",
             JsonLibrary = CSharpJsonLibrary.NewtonsoftJson,
@@ -67,36 +62,35 @@ public class MicroMessageContractGenerator
             ArrayBaseType = "System.Collections.Generic.IEnumerable",
             InlineNamedAny = true,
             InlineNamedArrays = true,
-            ExcludedTypeNames = new string[] {
+            ExcludedTypeNames = new[]
+            {
                 "Command", "CommandReply", "Query", "QueryReply", "QueryFilter"
             }
         };
     }
 
-    MicroMessageContract GenerateContract(Type type)
+    private MicroMessageContract GenerateContract(Type type)
     {
         var (content, sampleJson) = GenerateCode(type);
         var contentAsBinary = Encoding.UTF8.GetBytes(content);
-        var sample = Google.Protobuf.WellKnownTypes.Struct.Parser.ParseJson("{}");
-        if (!string.IsNullOrWhiteSpace(sampleJson))
-        {
-            sample = Google.Protobuf.WellKnownTypes.Struct.Parser.ParseJson(sampleJson);
-        }
+        var sample = Struct.Parser.ParseJson("{}");
+        if (!string.IsNullOrWhiteSpace(sampleJson)) sample = Struct.Parser.ParseJson(sampleJson);
 
-        return new MicroMessageContract()
+        return new MicroMessageContract
         {
             FullName = type.Namespace + "." + type.Name,
             File = type.Name + ".cs",
             Namespace = type.Namespace,
             Sample = sample,
-            Content = ByteString.CopyFrom(contentAsBinary),
+            Content = ByteString.CopyFrom(contentAsBinary)
         };
     }
 
     public (string content, string sampleJson) GenerateCode(Type type)
     {
-        var schema = NJsonSchema.JsonSchema.FromType(type);
-        schema.Description = $"{type.Name}\nTicimax Micro Messages\n({type.Assembly.FullName})\nGenerated At : {DateTime.Now}\n";
+        var schema = JsonSchema.FromType(type);
+        schema.Description =
+            $"{type.Name}\nTicimax Micro Messages\n({type.Assembly.FullName})\nGenerated At : {DateTime.Now}\n";
         var ns = $"{type.Namespace}";
 
         var settings = CodeSettings(ns);
@@ -105,9 +99,8 @@ public class MicroMessageContractGenerator
         var content = new CSharpGenerator(schema, settings, customResolver)
             .GenerateFile();
 
-        string sampleJson = schema.ToSampleJson()?.ToString();
+        var sampleJson = schema.ToSampleJson()?.ToString();
         return (content, sampleJson);
-
     }
 
     public class CustomResolver : CSharpTypeResolver
@@ -116,19 +109,16 @@ public class MicroMessageContractGenerator
         {
         }
 
-        public override string Resolve(NJsonSchema.JsonSchema schema, bool isNullable, string typeNameHint)
+        public override string Resolve(JsonSchema schema, bool isNullable, string typeNameHint)
         {
             if (schema.ActualProperties.Count() == 0)
-            {
-                schema.Properties["__dont_use"] = new NJsonSchema.JsonSchemaProperty()
+                schema.Properties["__dont_use"] = new JsonSchemaProperty
                 {
-                    Description = "Kullanmayin. Islevi olmayan ozellik. Sinif bos oldugunda tip olusmasi icin gecici ozellik verildi",
-                    Type = NJsonSchema.JsonObjectType.String
+                    Description =
+                        "Kullanmayin. Islevi olmayan ozellik. Sinif bos oldugunda tip olusmasi icin gecici ozellik verildi",
+                    Type = JsonObjectType.String
                 };
-            }
             return base.Resolve(schema, isNullable, typeNameHint);
         }
-
-
     }
 }

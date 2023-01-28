@@ -1,11 +1,10 @@
-﻿namespace FCMicroservices.Components.FunctionRegistries
+﻿namespace FCMicroservices.Components.FunctionRegistries;
+
+public interface IFunctionRegistry
 {
-    public interface IFunctionRegistry
-    {
-        void Init<T>(Func<Type, Function> metaFunction);
-        IEnumerable<Function> ListFunctions { get; }
-        (bool success, Type handlerType) FindHandlerType(string messageName);
-        (bool success, Type messageType) FindMessage(string messageName);
-        object Info();
-    }
+    IEnumerable<Function> ListFunctions { get; }
+    void Init<T>(Func<Type, Function> metaFunction);
+    (bool success, Type handlerType) FindHandlerType(string messageName);
+    (bool success, Type messageType) FindMessage(string messageName);
+    object Info();
 }

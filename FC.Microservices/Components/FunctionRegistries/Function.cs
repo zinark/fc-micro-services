@@ -1,12 +1,11 @@
-﻿namespace FCMicroservices.Components.FunctionRegistries
+﻿namespace FCMicroservices.Components.FunctionRegistries;
+
+public class Function
 {
-    public class Function
-    {
-        public Type? MessageType { get; set; }
-        public Type? HandlerType { get; set; }
-        public Type? ReplyType { get; set; }
-        public string? MessageName { get; set; }
-        public string? HandlerName { get; set; }
-        public string? ReplyName { get; set; }
-    }
+    public Type? MessageType { get; set; }
+    public Type? HandlerType { get; set; }
+    public Type? ReplyType { get; set; }
+    public string? MessageName { get; set; }
+    public string? HandlerName { get; set; }
+    public string? ReplyName { get; set; }
 }

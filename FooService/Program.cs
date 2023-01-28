@@ -1,9 +1,6 @@
 ﻿using FCMicroservices;
 
-
 Microservice
     .Create(args)
-    .OverrideApp(x =>
-    {
-    })
+    .OverrideApp(x => { })
     .Run();

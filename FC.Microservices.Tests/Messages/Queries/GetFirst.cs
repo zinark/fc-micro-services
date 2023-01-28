@@ -1,4 +1,5 @@
 ﻿using FCMicroservices.Components.BUS;
+
 namespace FCMicroservices.Tests.Messages.Queries;
 
 [Query]

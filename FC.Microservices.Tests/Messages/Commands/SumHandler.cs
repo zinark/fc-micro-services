@@ -7,8 +7,8 @@ namespace FCMicroservices.Tests.Messages.Commands;
 
 public class SumHandler : Handler<Sum, SumReply>
 {
-    private ITenantResolver _tenantResolver;
     private readonly IEventPublisher publisher;
+    private readonly ITenantResolver _tenantResolver;
 
     public SumHandler(ITenantResolver resolver, IEventPublisher publisher)
     {
@@ -18,17 +18,14 @@ public class SumHandler : Handler<Sum, SumReply>
 
     public override SumReply Handle(Sum input)
     {
-        if (string.IsNullOrWhiteSpace(input.TenantId))
-        {
-            input.TenantId = _tenantResolver.Resolve();
-        }
+        if (string.IsNullOrWhiteSpace(input.TenantId)) input.TenantId = _tenantResolver.Resolve();
 
-        publisher.Publish(new HesaplamaBitti()
+        publisher.Publish(new HesaplamaBitti
         {
             ToplamTutar = input.X * input.Y
         });
 
-        return new SumReply()
+        return new SumReply
         {
             Sum = input.X + input.Y,
             Tenant = input.TenantId

@@ -1,5 +1,4 @@
 ﻿using FCMicroservices.Components.BUS;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -8,7 +7,7 @@ namespace FCMicroservices.Extensions;
 
 public static class StringExtensions
 {
-    static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+    private static readonly JsonSerializerSettings _jsonSettings = new()
     {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
     };
@@ -33,7 +32,7 @@ public static class StringExtensions
         }
         catch (Exception)
         {
-            return (false, default(T));
+            return (false, default);
         }
     }
 
@@ -45,6 +44,7 @@ public static class StringExtensions
             Console.WriteLine(title);
             Console.WriteLine("=========================");
         }
+
         Console.WriteLine(target);
         return target;
     }
@@ -73,21 +73,17 @@ public static class StringExtensions
         var jsonObject = JObject.Parse(json);
         var token = jsonObject.SelectToken(path);
 
-        if (token is null)
-        {
-            return null;
-            // throw new ApiException("Gonderilen yol {0} json object icinde bulunamadi! Gonderilen {1}", new { path, json });
-        }
-
+        if (token is null) return null;
+        // throw new ApiException("Gonderilen yol {0} json object icinde bulunamadi! Gonderilen {1}", new { path, json });
         if (token.Type == JTokenType.Object)
-        {
-            throw new ApiException("Gonderilen yol {0} json object icinde bir nesneye denk geliyor! Degeri alacak tam bir yol verin!", new { path });
-        }
+            throw new ApiException(
+                "Gonderilen yol {0} json object icinde bir nesneye denk geliyor! Degeri alacak tam bir yol verin!",
+                new { path });
 
         if (token.Type == JTokenType.Array)
-        {
-            throw new ApiException("Gonderilen yol {0} json object icinde bir listeye denk geliyor! Degeri alacak tam bir yol verin!", new { path });
-        }
+            throw new ApiException(
+                "Gonderilen yol {0} json object icinde bir listeye denk geliyor! Degeri alacak tam bir yol verin!",
+                new { path });
 
         return token.Value<string>();
     }
@@ -99,32 +95,31 @@ public static class StringExtensions
         var result = new List<T>();
 
         if (token is null)
-        {
-            throw new ApiException("Gonderilen yol {0} json object icinde bulunamadi! Gonderilen {1}", new { path, json });
-        }
+            throw new ApiException("Gonderilen yol {0} json object icinde bulunamadi! Gonderilen {1}",
+                new { path, json });
 
         if (token.Type == JTokenType.Array)
         {
-            if (!token.HasValues)
-            {
-                return new List<T>();
-            }
+            if (!token.HasValues) return new List<T>();
 
             var rows = (token as JArray).Children();
             foreach (var row in rows)
             {
-                string? jsonpart = row.ToString();
-                (bool success, T rowValue) = jsonpart.TryToParseJson<T>();
+                var jsonpart = row.ToString();
+                var (success, rowValue) = jsonpart.TryToParseJson<T>();
 
                 if (!success)
-                {
-                    throw new ApiException("new ile construct olabilecek bir deger gonderin! Objeye cevrilemeyen deger : {1} {0} {2}", new { path, jsonpart, json });
-                }
+                    throw new ApiException(
+                        "new ile construct olabilecek bir deger gonderin! Objeye cevrilemeyen deger : {1} {0} {2}",
+                        new { path, jsonpart, json });
                 result.Add(rowValue);
             }
+
             return result;
         }
 
-        throw new ApiException("Gonderilen yol {0} json object icinde liste olmayan bir degere denk geliyor! Liste alacak tam bir yol verin!", new { path });
+        throw new ApiException(
+            "Gonderilen yol {0} json object icinde liste olmayan bir degere denk geliyor! Liste alacak tam bir yol verin!",
+            new { path });
     }
 }

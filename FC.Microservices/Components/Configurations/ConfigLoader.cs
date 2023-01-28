@@ -1,45 +1,45 @@
 ﻿using FCMicroservices.Components.BUS;
-
 using Microsoft.Extensions.Configuration;
 
 namespace FCMicroservices.Components.Configurations;
 
 public class ConfigLoader : IConfigLoader
 {
-    readonly IConfiguration _config;
-    readonly static Dictionary<string?, string> _history = new();
-    public static Dictionary<string?, string> History => _history;
+    private readonly IConfiguration _config;
+
     public ConfigLoader(IConfiguration config)
     {
         _config = config;
     }
+
+    public static Dictionary<string?, string> History { get; } = new();
 
     public string Load(string? path, string defaultValue = "")
     {
         var envValue = Environment.GetEnvironmentVariable(path);
         if (!string.IsNullOrWhiteSpace(envValue))
         {
-            _history[path] = envValue;
+            History[path] = envValue;
             return envValue;
         }
 
         var connValue = _config.GetConnectionString(path);
         if (!string.IsNullOrWhiteSpace(connValue))
         {
-            _history[path] = connValue;
+            History[path] = connValue;
             return connValue;
         }
 
         var cfgValue = _config.GetValue<string>(path);
         if (!string.IsNullOrWhiteSpace(cfgValue))
         {
-            _history[path] = cfgValue;
+            History[path] = cfgValue;
             return cfgValue;
         }
 
         if (!string.IsNullOrWhiteSpace(defaultValue))
         {
-            _history[path] = defaultValue;
+            History[path] = defaultValue;
             return defaultValue;
         }
 

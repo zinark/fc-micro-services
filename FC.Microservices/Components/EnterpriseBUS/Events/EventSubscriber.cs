@@ -1,28 +1,28 @@
-﻿using FCMicroservices.Components.BUS;
+﻿using System.Text;
+using FCMicroservices.Components.BUS;
 using FCMicroservices.Components.BUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Loggers;
 using FCMicroservices.Utils;
-
 using NATS.Client;
-
 using Newtonsoft.Json;
 
-using System.Text;
+namespace FCMicroservices.Components.EnterpriseBUS.Events;
 
 public class EventSubscriber : IDisposable, IEventSubscriber
 {
-    string _url;
-    static IFunctionRegistry _registry;
+    private static IFunctionRegistry _registry;
+    private static IEnumerable<Type> _registeredEvents;
+    private readonly IConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ITracer _tracer;
-    readonly IConnection _connection;
-    readonly IServiceProvider _serviceProvider;
-    static IEnumerable<Type> _registeredEvents;
+    private readonly string _url;
 
     public EventSubscriber(IServiceProvider serviceProvider, ITracer tracer, string url)
     {
         _url = url;
-        if (string.IsNullOrWhiteSpace(url)) throw new ApiException("EventSubscriber baglanti kuracagi Queue icin url bos olamaz!");
+        if (string.IsNullOrWhiteSpace(url))
+            throw new ApiException("EventSubscriber baglanti kuracagi Queue icin url bos olamaz!");
         ConnectionFactory factory = new();
         _tracer = tracer;
         try
@@ -31,13 +31,31 @@ public class EventSubscriber : IDisposable, IEventSubscriber
         }
         catch (Exception? ex)
         {
-            throw new ApiException("NATS.IO icin {0} baglanti adresine erisilemedi! Event kullanmak icin queue gerekiyor. " + Environment.NewLine +
-                "Event calismasini istemiyorsaniz, appsettings.json dosyasinda 'use_pubsub': 'no' ekleyebilirsiniz." + Environment.NewLine +
-                "Ya da Docker'la bir ornek olusturun 'docker run nats' veya calisan bir nats.io queue url'i verin", new { _url }, ex);
+            throw new ApiException(
+                "NATS.IO icin {0} baglanti adresine erisilemedi! Event kullanmak icin queue gerekiyor. " +
+                Environment.NewLine +
+                "Event calismasini istemiyorsaniz, appsettings.json dosyasinda 'use_pubsub': 'no' ekleyebilirsiniz." +
+                Environment.NewLine +
+                "Ya da Docker'la bir ornek olusturun 'docker run nats' veya calisan bir nats.io queue url'i verin",
+                new { _url }, ex);
         }
 
         _serviceProvider = serviceProvider;
+    }
 
+    public void Dispose()
+    {
+        _connection.Close();
+    }
+
+    public void Listen(Type type)
+    {
+        var (success, subscriptionType) = _registry.FindHandlerType(type.FullName);
+        if (!success) throw new ApiException("Uygun eventsubscription kayitlanmamis! {0}", new { type.Name });
+        var subscription = (IEventSubscription)_serviceProvider.GetService(subscriptionType);
+
+        var subject = type.Name;
+        Subscribe(subject, x => { subscription.OnEvent(x); });
     }
 
     public static void Init(IFunctionRegistry registry)
@@ -51,29 +69,16 @@ public class EventSubscriber : IDisposable, IEventSubscriber
             .ToList();
     }
 
-    public void Listen(Type type)
-    {
-        var (success, subscriptionType) = _registry.FindHandlerType(type.FullName);
-        if (!success)
-        {
-            throw new ApiException("Uygun eventsubscription kayitlanmamis! {0}", new { type.Name });
-        }
-        var subscription = (IEventSubscription)_serviceProvider.GetService(subscriptionType);
-
-        var subject = type.Name;
-        Subscribe(subject, (x) => { subscription.OnEvent(x); });
-    }
-
     public void Subscribe(Type type, IEventSubscription subscription)
     {
         var subject = type.Name;
-        Subscribe(subject, (x) => { subscription.OnEvent(x); });
+        Subscribe(subject, x => { subscription.OnEvent(x); });
     }
 
     public void Subscribe<T>(Action<T> onMessage)
     {
         var subject = typeof(T).Name;
-        Subscribe(subject, (x) => { onMessage((T)x); });
+        Subscribe(subject, x => { onMessage((T)x); });
     }
 
     public void Subscribe(string subject, Action<object> onMessage)
@@ -96,7 +101,7 @@ public class EventSubscriber : IDisposable, IEventSubscriber
             try
             {
                 onMessage(data_json);
-                _tracer.Trace("EVENT> " + type.Namespace, new Dictionary<string, object>()
+                _tracer.Trace("EVENT> " + type.Namespace, new Dictionary<string, object>
                 {
                     { "ns", type.Namespace },
                     { "type", type.Name },
@@ -109,7 +114,7 @@ public class EventSubscriber : IDisposable, IEventSubscriber
             {
                 args.Message.Nak();
 
-                _tracer.Trace("EVENT EXCEPTION!> " + type.Namespace, new Dictionary<string, object>()
+                _tracer.Trace("EVENT EXCEPTION!> " + type.Namespace, new Dictionary<string, object>
                 {
                     { "ns", type.Namespace },
                     { "type", type.Name },
@@ -122,10 +127,5 @@ public class EventSubscriber : IDisposable, IEventSubscriber
                 }, exc);
             }
         });
-    }
-
-    public void Dispose()
-    {
-        _connection.Close();
     }
 }
