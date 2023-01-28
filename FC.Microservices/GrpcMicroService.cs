@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using FCMicroservices.Components;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;

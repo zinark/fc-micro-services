@@ -1,13 +1,13 @@
 ﻿using FCMicroservices.Extensions;
 
-namespace FCMicroservices.Components.EnterpriseBUS;
+namespace FCMicroservices.Components;
 
 public class ApiException : Exception
 {
     public ApiException(string message, object? data = null, Exception? innerException = null) : base(
         string.Format(message, GetArgs(data)), innerException)
     {
-        ErrorCode = string.Format("{0:X}", message.GetHashCode());
+        ErrorCode = message.AsHash();
         Message = string.Format(message, GetArgs(data));
         Data = data;
     }

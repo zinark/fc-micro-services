@@ -1,4 +1,4 @@
-﻿using FCMicroservices.Components.EnterpriseBUS;
+﻿using FCMicroservices.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;

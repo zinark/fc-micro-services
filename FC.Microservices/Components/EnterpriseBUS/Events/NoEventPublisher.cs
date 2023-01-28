@@ -1,7 +1,6 @@
-﻿using FCMicroservices.Components.EnterpriseBUS.Events;
-using FCMicroservices.Extensions;
+﻿using FCMicroservices.Extensions;
 
-namespace FCMicroservices;
+namespace FCMicroservices.Components.EnterpriseBUS.Events;
 
 public class NoEventPublisher : IEventPublisher
 {
