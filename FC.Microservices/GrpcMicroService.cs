@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.Loggers;
+using FCMicroservices.Components.EnterpriseBUS;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using Google.Protobuf;
 using Grpc.Core;

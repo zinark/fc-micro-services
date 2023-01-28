@@ -1,4 +1,4 @@
-﻿namespace FCMicroservices.Components.BUS.Events;
+﻿namespace FCMicroservices.Components.EnterpriseBUS.Events;
 
 public abstract class EventSubscription<T> : IEventSubscription
 {

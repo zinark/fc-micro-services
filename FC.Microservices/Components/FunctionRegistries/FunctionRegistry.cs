@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.BUS.Events;
+using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Utils;
 using Microsoft.Extensions.DependencyInjection;

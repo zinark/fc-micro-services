@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace FCMicroservices.Components.CustomerDomainResolvers;
+namespace FCMicroservices.Components.TenantResolvers;
 
 public class HttpTenantResolver : ITenantResolver
 {
@@ -9,21 +9,21 @@ public class HttpTenantResolver : ITenantResolver
         "X-tenant", "X-DomainName", "X-domain-name"
     };
 
-    private readonly IHttpContextAccessor accessor;
+    private readonly IHttpContextAccessor _accessor;
 
     public HttpTenantResolver(IHttpContextAccessor accessor)
     {
-        this.accessor = accessor;
+        _accessor = accessor;
     }
 
     public string Resolve()
     {
-        if (accessor == null) return "<undefined tenant>";
-        if (accessor.HttpContext == null) return "<undefined tenant>";
+        if (_accessor == null) return "<undefined tenant>";
+        if (_accessor.HttpContext == null) return "<undefined tenant>";
 
         foreach (var name in DEFAULT_EXPECTED_HEADERS)
-            if (accessor.HttpContext.Request.Headers.ContainsKey(name))
-                return accessor.HttpContext.Request.Headers[name];
+            if (_accessor.HttpContext.Request.Headers.ContainsKey(name))
+                return _accessor.HttpContext.Request.Headers[name];
 
         return "<undefined tenant>";
     }

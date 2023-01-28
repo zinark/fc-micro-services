@@ -1,6 +1,6 @@
 ﻿using FCMicroservices.Extensions;
 
-namespace FCMicroservices.Components.BUS;
+namespace FCMicroservices.Components.EnterpriseBUS;
 
 public class ApiException : Exception
 {

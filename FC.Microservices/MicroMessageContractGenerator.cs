@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Utils;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;

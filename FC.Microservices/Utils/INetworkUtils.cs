@@ -1,4 +1,4 @@
-﻿namespace FCMicroservices.Components.Networks;
+﻿namespace FCMicroservices.Utils;
 
 public interface INetworkUtils
 {

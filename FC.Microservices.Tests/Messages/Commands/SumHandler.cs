@@ -1,6 +1,6 @@
-﻿using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.BUS.Events;
-using FCMicroservices.Components.CustomerDomainResolvers;
+﻿using FCMicroservices.Components.EnterpriseBUS;
+using FCMicroservices.Components.EnterpriseBUS.Events;
+using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Tests.Messages.Events;
 
 namespace FCMicroservices.Tests.Messages.Commands;

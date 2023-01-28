@@ -1,4 +1,4 @@
-﻿namespace FCMicroservices.Components.BUS;
+﻿namespace FCMicroservices.Components.EnterpriseBUS;
 
 public abstract class Handler<T, TReply> : IHandler
 {

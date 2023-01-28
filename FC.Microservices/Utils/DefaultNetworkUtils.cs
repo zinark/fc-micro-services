@@ -2,9 +2,8 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
-using static FCMicroservices.Components.Networks.INetworkUtils;
 
-namespace FCMicroservices.Components.Networks;
+namespace FCMicroservices.Utils;
 
 public class DefaultNetworkUtils : INetworkUtils
 {
@@ -40,7 +39,7 @@ public class DefaultNetworkUtils : INetworkUtils
 
     public object Ports()
     {
-        var Ports = new List<Port>();
+        var Ports = new List<INetworkUtils.Port>();
 
         try
         {
@@ -75,7 +74,7 @@ public class DefaultNetworkUtils : INetworkUtils
                     if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
                     {
                         var localAddress = Regex.Replace(tokens[2], @"\[(.*?)\]", "1.1.1.1");
-                        Ports.Add(new Port
+                        Ports.Add(new INetworkUtils.Port
                         {
                             Protocol = localAddress.Contains("1.1.1.1")
                                 ? string.Format("{0}v6", tokens[1])

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace FCMicroservices.Components.Loggers;
+namespace FCMicroservices.Components.Tracers;
 
 public interface ITracer
 {

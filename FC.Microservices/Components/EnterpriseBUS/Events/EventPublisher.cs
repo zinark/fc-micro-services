@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.BUS.Events;
 using FCMicroservices.Extensions;
 using NATS.Client;
 

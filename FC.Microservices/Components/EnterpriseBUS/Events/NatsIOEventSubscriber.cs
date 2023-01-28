@@ -1,15 +1,13 @@
 ﻿using System.Text;
-using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.BUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
-using FCMicroservices.Components.Loggers;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Utils;
 using NATS.Client;
 using Newtonsoft.Json;
 
 namespace FCMicroservices.Components.EnterpriseBUS.Events;
 
-public class EventSubscriber : IDisposable, IEventSubscriber
+public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
 {
     private static IFunctionRegistry _registry;
     private static IEnumerable<Type> _registeredEvents;
@@ -18,7 +16,7 @@ public class EventSubscriber : IDisposable, IEventSubscriber
     private readonly ITracer _tracer;
     private readonly string _url;
 
-    public EventSubscriber(IServiceProvider serviceProvider, ITracer tracer, string url)
+    public NatsIOEventSubscriber(IServiceProvider serviceProvider, ITracer tracer, string url)
     {
         _url = url;
         if (string.IsNullOrWhiteSpace(url))

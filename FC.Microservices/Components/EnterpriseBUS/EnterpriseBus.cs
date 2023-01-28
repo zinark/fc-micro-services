@@ -1,12 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using FCMicroservices.Components.FunctionRegistries;
-using FCMicroservices.Components.Loggers;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace FCMicroservices.Components.BUS;
+namespace FCMicroservices.Components.EnterpriseBUS;
 
 public class EnterpriseBus
 {

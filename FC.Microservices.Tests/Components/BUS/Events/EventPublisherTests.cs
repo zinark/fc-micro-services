@@ -1,6 +1,5 @@
-﻿using FCMicroservices.Components.BUS.Events;
-using FCMicroservices.Components.EnterpriseBUS.Events;
-using FCMicroservices.Components.Loggers;
+﻿using FCMicroservices.Components.EnterpriseBUS.Events;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 
 namespace FCMicroservices.Tests.Components.BUS.Events;
@@ -13,7 +12,7 @@ public class EventPublisherTests
     [TestMethod]
     public void PublishTest()
     {
-        using var sub = new EventSubscriber(null, new NoTracer(), URL);
+        using var sub = new NatsIOEventSubscriber(null, new NoTracer(), URL);
 
         var messageReceived = false;
 

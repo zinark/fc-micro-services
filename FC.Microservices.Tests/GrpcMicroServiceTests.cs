@@ -1,6 +1,6 @@
-﻿using FCMicroservices.Components.BUS;
+﻿using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.FunctionRegistries;
-using FCMicroservices.Components.Loggers;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Tests.Messages.Commands;
 using FCMicroservices.Tests.Messages.Queries;

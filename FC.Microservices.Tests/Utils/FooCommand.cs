@@ -1,4 +1,4 @@
-﻿using FCMicroservices.Components.BUS;
+﻿using FCMicroservices.Components.EnterpriseBUS;
 
 namespace Ticimax.Core.Microservice.Utils.Tests;
 

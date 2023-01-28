@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security;
-using FCMicroservices.Components.BUS;
+using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
 using Microsoft.AspNetCore.Http;

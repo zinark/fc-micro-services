@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using FCMicroservices.Utils;
 
-namespace FCMicroservices.Components.Loggers;
+namespace FCMicroservices.Components.Tracers;
 
 public class LogTracer : ITracer
 {

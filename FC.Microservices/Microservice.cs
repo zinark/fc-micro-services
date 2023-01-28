@@ -1,12 +1,10 @@
-﻿using FCMicroservices.Components.BUS;
-using FCMicroservices.Components.BUS.Events;
-using FCMicroservices.Components.Configurations;
-using FCMicroservices.Components.CustomerDomainResolvers;
+﻿using FCMicroservices.Components.Configurations;
+using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
-using FCMicroservices.Components.Loggers;
 using FCMicroservices.Components.Middlewares;
-using FCMicroservices.Components.Networks;
+using FCMicroservices.Components.TenantResolvers;
+using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
 using Microsoft.AspNetCore.Builder;
@@ -112,7 +110,7 @@ public class Microservice
                     var cfgLoader = _app.Services.GetService<IConfigLoader>();
                     var tracer = _app.Services.GetService<ITracer>();
                     var serviceProvider = _app.Services;
-                    return new EventSubscriber(serviceProvider, tracer, url);
+                    return new NatsIOEventSubscriber(serviceProvider, tracer, url);
                 });
             }
             else
@@ -125,7 +123,7 @@ public class Microservice
             _functionRegistry = new FunctionRegistry(services);
             services.AddSingleton(x => _functionRegistry);
             EnterpriseBus.Init(_functionRegistry);
-            EventSubscriber.Init(_functionRegistry);
+            NatsIOEventSubscriber.Init(_functionRegistry);
         }
     }
 

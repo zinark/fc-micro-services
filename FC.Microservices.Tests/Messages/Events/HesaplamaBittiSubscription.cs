@@ -1,4 +1,4 @@
-﻿using FCMicroservices.Components.BUS.Events;
+﻿using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Extensions;
 
 namespace FCMicroservices.Tests.Messages.Events;

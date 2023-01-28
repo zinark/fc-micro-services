@@ -1,4 +1,4 @@
-﻿using FCMicroservices.Components.BUS;
+﻿using FCMicroservices.Components.EnterpriseBUS;
 using Microsoft.Extensions.Configuration;
 
 namespace FCMicroservices.Components.Configurations;

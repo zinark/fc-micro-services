@@ -1,4 +1,4 @@
-﻿namespace FCMicroservices.Components.BUS;
+﻿namespace FCMicroservices.Components.EnterpriseBUS;
 
 public class MicroMessageAttribute : Attribute
 {
