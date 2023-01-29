@@ -9,6 +9,7 @@ using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -45,6 +46,17 @@ public class Microservice
         svcReg.ServiceSwagger(_builder.Services);
         svcReg.ServiceJson(_builder.Services);
         svcReg.ServiceWeb(_builder.Services);
+        
+        _builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
+        {
+            options.LoginPath = new PathString("/Account/Login/");
+            options.AccessDeniedPath = new PathString("/Account/Forbidden/");
+        });
+        
         _svcFunction(_builder.Services);
 
         // PROBES
@@ -55,7 +67,13 @@ public class Microservice
 
         // APP
         _app = _builder.Build();
-
+        _app.UseStaticFiles();
+        _app.UseRouting();
+        _app.UseAuthentication();
+        _app.UseAuthorization();
+        
+        _appFunction(_app);
+        
         var subscriber = _app.Services.GetService<IEventSubscriber>();
 
         var subscribers = new List<dynamic>();
@@ -77,7 +95,7 @@ public class Microservice
             return Results.Content(_functionRenderer.Render(found), "text/html", Encoding.UTF8);
         });
 
-        _appFunction(_app);
+        
 
         var appReg = new AppRegistrations();
         appReg.ApplicationGrpc(_app);

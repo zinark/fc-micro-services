@@ -5,9 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>0.0.2</Version>
-        <AssemblyVersion>0.0.1</AssemblyVersion>
-        <FileVersion>0.0.1</FileVersion>
+        <Version>0.3.2</Version>
+        <AssemblyVersion>0.3.2</AssemblyVersion>
+        <FileVersion>0.3.2</FileVersion>
         <RootNamespace>FCMicroservices</RootNamespace>
         <PackageId>FCMicroservices</PackageId>
         <ApplicationIcon>icon.ico</ApplicationIcon>

@@ -2,5 +2,4 @@
 
 Microservice
     .Create(args)
-    .OverrideApp(x => { })
     .Run();
