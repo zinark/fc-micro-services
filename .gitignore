@@ -40,3 +40,8 @@ FCVirtualMachine/bin/Debug/net7.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 FCVirtualMachine/bin/Debug/net7.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 Pack.01/bin/Debug/net7.0/Pack.01.dll
 /FCVirtualMachine/obj
+Pack.01/obj/project.nuget.cache
+Pack.01/obj/project.assets.json
+Pack.01/obj/Pack.01.csproj.nuget.g.targets
+Pack.01/obj/Pack.01.csproj.nuget.g.props
+Pack.01/obj/Pack.01.csproj.nuget.dgspec.json
