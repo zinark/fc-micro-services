@@ -1,8 +1,8 @@
 ﻿using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
-using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Functions;
 using FCMicroservices.Extensions;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FCMicroservices.Tests.Components.FunctionRegistries;

@@ -3,18 +3,17 @@
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
-using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Middlewares;
 using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
+using FCMicroservices.MicroUtils;
 using FCMicroservices.Utils;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -82,7 +81,7 @@ public class Microservice
         var subscribers = new List<dynamic>();
         foreach (var sub in _subscriptions)
         {
-            Console.WriteLine("subscribing... " + sub.Name);
+            Console.WriteLine("subscribing... " + sub.FullName);
             subscriber.Listen(sub);
             subscribers.Add(sub.Name);
         }
@@ -91,6 +90,21 @@ public class Microservice
 
         _app.UseMiddleware<JsonExceptionMiddleware>();
         var functionRegistry = _app.Services.GetService<IFunctionRegistry>();
+
+        _app.MapPost("/publish", async (HttpContext ctx, IEventPublisher pub) =>
+        {
+            using var reader = new StreamReader(ctx.Request.Body);
+            string body = await reader.ReadToEndAsync();
+            dynamic bodyJs = body.ParseJson<dynamic>();
+
+            string eventType = (string)bodyJs["type"];
+            string eventJson = (string)bodyJs["json"];
+            pub.Publish(eventType, eventJson);
+
+            ctx.Response.StatusCode = 200;
+            await ctx.Response.WriteAsync("{}");
+        });
+
         _app.Map("/", () => ApiInfo(functionRegistry));
         _app.Map("/f/{type}/{f}", (string f) =>
         {

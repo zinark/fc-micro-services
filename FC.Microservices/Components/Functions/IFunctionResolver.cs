@@ -1,6 +1,4 @@
-﻿using FCMicroservices.Components.Functions;
-
-namespace FCMicroservices.Components.FunctionRegistries;
+﻿namespace FCMicroservices.Components.Functions;
 
 public interface IFunctionResolver
 {

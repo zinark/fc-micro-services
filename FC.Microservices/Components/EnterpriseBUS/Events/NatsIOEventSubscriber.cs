@@ -1,9 +1,11 @@
 ﻿using System.Text;
-using FCMicroservices.Components.FunctionRegistries;
+
 using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Utils;
+
 using NATS.Client;
+
 using Newtonsoft.Json;
 
 namespace FCMicroservices.Components.EnterpriseBUS.Events;
@@ -50,10 +52,10 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
     public void Listen(Type type)
     {
         var (success, subscriptionType) = _registry.FindHandlerType(type.FullName);
-        if (!success) throw new ApiException("Uygun eventsubscription kayitlanmamis! {0}", new { type.Name });
+        if (!success) throw new ApiException("Uygun eventsubscription kayitlanmamis! {0}", new { type.FullName });
         var subscription = (IEventSubscription)_serviceProvider.GetService(subscriptionType);
 
-        var subject = type.Name;
+        var subject = type.FullName;
         Subscribe(subject, x => { subscription.OnEvent(x); });
     }
 
@@ -88,7 +90,8 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
 
         var result = _connection.SubscribeAsync(subject, (sender, args) =>
         {
-            var type = _registeredEvents.Where(x => x.Name.Contains(subject)).FirstOrDefault();
+            var type = _registeredEvents.Where(x => x.FullName.Contains(subject)).FirstOrDefault();
+            if (type == null) throw new ApiException("{0} event-type (subject) icin bir dinleyi bulunamadi!", new { subject });
 
             var data_bytes = args.Message.Data;
             var data_string = Encoding.UTF8.GetString(data_bytes);
@@ -115,8 +118,8 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
 
                 _tracer.Trace("EVENT EXCEPTION!> " + type.Namespace, new Dictionary<string, object>
                 {
-                    { "ns", type.Namespace },
-                    { "type", type.Name },
+                    { "ns", type?.Namespace },
+                    { "type", type?.Name },
                     { "exception", exc.ToString() }
                 });
 

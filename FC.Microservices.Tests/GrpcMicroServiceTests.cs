@@ -1,5 +1,4 @@
 ﻿using FCMicroservices.Components.EnterpriseBUS;
-using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;

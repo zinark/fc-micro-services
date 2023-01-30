@@ -7,7 +7,7 @@ using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
 using Type = System.Type;
 
-namespace FCMicroservices;
+namespace FCMicroservices.MicroUtils;
 
 public class MicroMessageContractGenerator
 {

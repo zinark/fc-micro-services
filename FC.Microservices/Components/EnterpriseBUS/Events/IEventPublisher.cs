@@ -3,4 +3,5 @@
 public interface IEventPublisher
 {
     void Publish<T>(T @event);
+    void Publish(string eventType, string eventAsJson);
 }

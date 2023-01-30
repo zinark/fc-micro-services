@@ -1,5 +1,5 @@
-﻿using FCMicroservices.Components.FunctionRegistries;
-using FCMicroservices.Extensions;
+﻿using FCMicroservices.Extensions;
+using FCMicroservices.MicroUtils;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,14 +55,67 @@ public class FunctionRenderer : IFunctionRenderer
                 $"<td> <h4><pre>{f.ReplyType?.Name} </pre> </h4> </td> " +
                 $"</tr>" +
                 "<tr> " +
-                $"<td> <pre><textarea style='width:80%; padding:10px; margin:0px; height:320px'>{msg}</textarea><pre> </td>" +
-                $"<td> <pre><div style='width:80%; padding:10px; margin:0px; height:320px'>{reply}</div></pre> </td>" +
+                $"<td> <pre><textarea id='msg' style='width:80%; padding:10px; margin:0px; height:320px'>{msg}</textarea><pre> </td>" +
+                $"<td> <pre><div style='width:80%; max-width:320px; padding:10px; margin:0px; height:320px'><span id='reply'>{reply}</span></div></pre> </td>" +
                 "</tr>" +
                 "</table> </div>";
 
-        string html_buttons = @"<button onclick=""alert('hello')""> EXECUTE </button>";
+        string js = @"<script>
+    function send () {
+        
+        var js = document.getElementById('msg').value;
+        document.getElementById ('send')['disabled'] = 'disabled';
 
-        return "<html> <body> <div style='margin:0px; padding:5px;'> " +
+        const data = {
+            type : window.f,
+            json : js
+            
+        };
+
+        url = '/execute';
+        if (window.ftype == '[Q]') url = '/query';
+        if (window.ftype == '[E]') url = '/publish';
+        
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById ('send')['disabled'] = null;
+            console.log('Success:', data);
+
+            response = ''
+            response += 'POST ' + url;
+            response += '\r\n';
+
+            response += JSON.stringify(data, '', 4);
+            if (data.json) {
+                response += '\r\n\r\njson:' + JSON.stringify(JSON.parse (data.json), '', 4)
+            }
+            
+            if (!data.success){
+                response += '\r\n\r\nhata:' + data.error;
+            }
+            
+            document.getElementById('reply').innerHTML = response
+          })
+          .catch((error) => {
+            document.getElementById ('send')['disabled'] = null;
+            document.getElementById('reply').innerHTML = 'ERR : ' + error;
+          });        
+    }
+</script>";
+
+        js += $"<script> window.f = '{f.MessageName}'; </script>";
+        js += $"<script> window.ftype = '{f.MicroMessageType}'; </script>";
+
+        string html_buttons = @"<button id='send' onclick=""send()""> EXECUTE </button>";
+
+        return $"<html> <head> {js} </head> <body> <div style='margin:0px; padding:5px;'> " +
                html +
                "<div>" +
                "<pre> Connection Address/Port " + $"{f.ConnectionAddress} : {f.ConnectionPort}" + "</pre>" +

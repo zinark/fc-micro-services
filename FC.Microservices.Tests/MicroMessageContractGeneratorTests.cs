@@ -1,4 +1,6 @@
-﻿namespace FCMicroservices.Tests;
+﻿using FCMicroservices.MicroUtils;
+
+namespace FCMicroservices.Tests;
 
 [TestClass]
 public class MicroMessageContractGeneratorTests

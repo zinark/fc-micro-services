@@ -1,19 +1,22 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.HealthChecks;
 using FCMicroservices.Utils;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace FCMicroservices;
+namespace FCMicroservices.MicroUtils;
 
 public class ServiceRegistrations
 {
@@ -100,7 +103,7 @@ public class ServiceRegistrations
                 Title = API_TITLE + " " + API_VERSION,
                 Version = API_VERSION,
             });
-            
+
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -143,7 +146,7 @@ public class ServiceRegistrations
             options.MaxSendMessageSize = 1024 * 1024 * 1024; //1GB
             options.EnableDetailedErrors = true;
         });
-        services.AddGrpcHttpApi();
+        // services.AddGrpcHttpApi();
         services.AddGrpcReflection();
     }
 

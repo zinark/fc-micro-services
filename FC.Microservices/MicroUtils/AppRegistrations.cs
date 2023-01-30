@@ -1,8 +1,9 @@
 ﻿using FCMicroservices.Utils;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
-namespace FCMicroservices;
+namespace FCMicroservices.MicroUtils;
 
 public class AppRegistrations
 {
@@ -25,9 +26,9 @@ public class AppRegistrations
     {
         app.UseStaticFiles();
         app.UseRouting();
-        app.UseHealthChecks("/liveness", new HealthCheckOptions { Predicate = x => x.Tags.Contains("live") });
-        app.UseHealthChecks("/readiness", new HealthCheckOptions { Predicate = x => x.Tags.Contains("ready") });
-        app.UseHealthChecks("/startup", new HealthCheckOptions { Predicate = x => x.Tags.Contains("start") });
+        app.UseHealthChecks("/check/liveness", new HealthCheckOptions { Predicate = x => x.Tags.Contains("live") });
+        app.UseHealthChecks("/check/readiness", new HealthCheckOptions { Predicate = x => x.Tags.Contains("ready") });
+        app.UseHealthChecks("/check/startup", new HealthCheckOptions { Predicate = x => x.Tags.Contains("start") });
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
