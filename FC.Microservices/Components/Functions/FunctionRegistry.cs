@@ -1,8 +1,10 @@
 ﻿using System.Collections.Concurrent;
+
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Utils;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FCMicroservices.Components.Functions;
@@ -103,12 +105,13 @@ public class FunctionRegistry : IFunctionRegistry
                 {
                     Namespace = ns.Key,
                     // Total = ns.Count(),
-                    Messages = ns.GroupBy(x => x.MessageType).Select(x => new
-                    {
-                        MessageType = x.Key,
-                        // Quantity = x.Count(),
-                        Messages = x.Select(x=>x.Url).ToList()
-                    })
+                    //Messages = ns.GroupBy(x => x.MessageType).Select(x => new
+                    //{
+                    //    MessageType = x.Key,
+                    //    // Quantity = x.Count(),
+                    //    Messages = x.Select(x=>x.Url).ToList()
+                    //}),
+                    Messages = ns.Select(x => x.Url).ToList()
                 })
         };
     }
@@ -178,7 +181,7 @@ public class FunctionRegistry : IFunctionRegistry
                 Description = x.MicroMessageType + " " + x.MessageType?.Namespace + "." + x.MessageType?.Name +
                               " --> " + x.HandlerType?.Name + "() " +
                               " " + x.ReplyType?.Name,
-                Url = "/f/" + x.MessageName,
+                Url = "/f/" + x.MicroMessageType + "/" + x.MessageName,
                 MessageType = x.MicroMessageType
             })
             .ToList();

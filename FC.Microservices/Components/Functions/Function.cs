@@ -36,4 +36,5 @@ public class Function
     
     public string ConnectionAddress { get; set; }
     public string ConnectionPort { get; set; }
+    public string Description { get; set; } = "No description defined";
 }

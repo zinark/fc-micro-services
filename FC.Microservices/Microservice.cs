@@ -1,4 +1,5 @@
 ﻿using System.Text;
+
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
@@ -9,12 +10,14 @@ using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using Newtonsoft.Json;
 
 namespace FCMicroservices;
@@ -46,7 +49,7 @@ public class Microservice
         svcReg.ServiceSwagger(_builder.Services);
         svcReg.ServiceJson(_builder.Services);
         svcReg.ServiceWeb(_builder.Services);
-        
+
         _builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -56,7 +59,7 @@ public class Microservice
             options.LoginPath = new PathString("/Account/Login/");
             options.AccessDeniedPath = new PathString("/Account/Forbidden/");
         });
-        
+
         _svcFunction(_builder.Services);
 
         // PROBES
@@ -71,9 +74,9 @@ public class Microservice
         _app.UseRouting();
         _app.UseAuthentication();
         _app.UseAuthorization();
-        
+
         _appFunction(_app);
-        
+
         var subscriber = _app.Services.GetService<IEventSubscriber>();
 
         var subscribers = new List<dynamic>();
@@ -89,13 +92,13 @@ public class Microservice
         _app.UseMiddleware<JsonExceptionMiddleware>();
         var functionRegistry = _app.Services.GetService<IFunctionRegistry>();
         _app.Map("/", () => ApiInfo(functionRegistry));
-        _app.Map("/f/{f}", (string f) =>
+        _app.Map("/f/{type}/{f}", (string f) =>
         {
             var found = _functionRegistry.FindFunction(f);
             return Results.Content(_functionRenderer.Render(found), "text/html", Encoding.UTF8);
         });
 
-        
+
 
         var appReg = new AppRegistrations();
         appReg.ApplicationGrpc(_app);
