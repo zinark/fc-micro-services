@@ -1,14 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.HealthChecks;
 using FCMicroservices.Utils;
+
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -100,7 +105,7 @@ public class ServiceRegistrations
                 Title = API_TITLE + " " + API_VERSION,
                 Version = API_VERSION,
             });
-            
+
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -191,5 +196,19 @@ public class ServiceRegistrations
                 .AddHttpClientInstrumentation(options => { options.SetHttpFlavor = true; })
                 .AddGrpcClientInstrumentation(options => { })
             );
+    }
+
+    public void ServiceAuth(IServiceCollection services)
+    {
+        services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
+        {
+            options.LoginPath = new PathString("/Account/Login/");
+            options.AccessDeniedPath = new PathString("/Account/Forbidden/");
+        });
+
     }
 }

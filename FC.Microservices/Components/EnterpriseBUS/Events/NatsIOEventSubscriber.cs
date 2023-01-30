@@ -60,7 +60,7 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
     public static void Init(IFunctionRegistry registry)
     {
         _registry = registry;
-        registry.Init<IEventSubscription>(FunctionRegistry.RegisterEvents);
+        registry.Init<IEventSubscription>(FunctionRegistry.BuildFunctionForEvents);
         _registeredEvents = AssemblyUtils.SearchTypes()
             .Where(x => x.HasAttribute<EventAttribute>())
             .Where(x => !x.IsAbstract)

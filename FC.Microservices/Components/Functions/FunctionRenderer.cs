@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FCMicroservices.Components.Functions;
 
-public class FunctionRenderer : IFunctionRenderer
+public class HtmlFunctionRenderer : IFunctionRenderer
 {
     public string Render(Function f)
     {

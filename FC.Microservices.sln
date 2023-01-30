@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FCMicroservices", "FC.Micro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FCMicroservices.Tests", "FC.Microservices.Tests\FCMicroservices.Tests.csproj", "{8C6B5226-4E25-43AB-80D7-55085221CF33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FooService", "FooService\FooService.csproj", "{0EEB81C0-55FF-41D6-A803-BDCDAF65EC96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FooService", "FooService\FooService.csproj", "{0EEB81C0-55FF-41D6-A803-BDCDAF65EC96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCVirtualMachine", "FCVirtualMachine\FCVirtualMachine.csproj", "{8399B91D-5AE4-444B-A389-E1AE7BC06834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pack.01", "Pack.01\Pack.01.csproj", "{F84A391E-4A2E-4C93-85F6-2090858EBFA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{0EEB81C0-55FF-41D6-A803-BDCDAF65EC96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EEB81C0-55FF-41D6-A803-BDCDAF65EC96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EEB81C0-55FF-41D6-A803-BDCDAF65EC96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8399B91D-5AE4-444B-A389-E1AE7BC06834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8399B91D-5AE4-444B-A389-E1AE7BC06834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8399B91D-5AE4-444B-A389-E1AE7BC06834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8399B91D-5AE4-444B-A389-E1AE7BC06834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F84A391E-4A2E-4C93-85F6-2090858EBFA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F84A391E-4A2E-4C93-85F6-2090858EBFA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F84A391E-4A2E-4C93-85F6-2090858EBFA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F84A391E-4A2E-4C93-85F6-2090858EBFA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

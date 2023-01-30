@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FCMicroservices</name>
+    </assembly>
+    <members>
+        <member name="M:FCMicroservices.Components.ApiException.CreateCritical(System.String,System.Object,System.Exception)">
+            <summary>
+                500
+            </summary>
+        </member>
+        <member name="M:FCMicroservices.Components.ApiException.CreateBadRequest(System.String,System.Object,System.Exception)">
+            <summary>
+                400
+            </summary>
+        </member>
+        <member name="M:FCMicroservices.Components.ApiException.CreateNotAllowed(System.String,System.Object,System.Exception)">
+            <summary>
+                403
+            </summary>
+        </member>
+        <member name="T:FCMicroservices.MicroserviceReflection">
+            <summary>Holder for reflection information generated from Microservice.proto</summary>
+        </member>
+        <member name="P:FCMicroservices.MicroserviceReflection.Descriptor">
+            <summary>File descriptor for Microservice.proto</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContracts.TotalFieldNumber">
+            <summary>Field number for the "total" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContracts.MessagesFieldNumber">
+            <summary>Field number for the "messages" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContract.FullNameFieldNumber">
+            <summary>Field number for the "fullName" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContract.FileFieldNumber">
+            <summary>Field number for the "file" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContract.NamespaceFieldNumber">
+            <summary>Field number for the "namespace" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContract.SampleFieldNumber">
+            <summary>Field number for the "sample" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.MicroMessageContract.ContentFieldNumber">
+            <summary>Field number for the "content" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Filter.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Filter.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Reply.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Reply.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Reply.SuccessFieldNumber">
+            <summary>Field number for the "success" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Reply.ErrorFieldNumber">
+            <summary>Field number for the "error" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteReply.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteReply.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteReply.SuccessFieldNumber">
+            <summary>Field number for the "success" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteReply.ErrorFieldNumber">
+            <summary>Field number for the "error" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteCommand.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteCommand.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteCommandList.CommandsFieldNumber">
+            <summary>Field number for the "Commands" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Command.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.Command.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.CommandList.CommandsFieldNumber">
+            <summary>Field number for the "Commands" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.FilterList.FiltersFieldNumber">
+            <summary>Field number for the "Filters" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ReplyList.RepliesFieldNumber">
+            <summary>Field number for the "Replies" field.</summary>
+        </member>
+        <member name="F:FCMicroservices.ByteReplyList.RepliesFieldNumber">
+            <summary>Field number for the "Replies" field.</summary>
+        </member>
+        <member name="P:FCMicroservices.MicroService.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:FCMicroservices.MicroService.MicroServiceBase">
+            <summary>Base class for server-side implementations of MicroService</summary>
+        </member>
+        <member name="T:FCMicroservices.MicroService.MicroServiceClient">
+            <summary>Client for MicroService</summary>
+        </member>
+        <member name="M:FCMicroservices.MicroService.MicroServiceClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for MicroService</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:FCMicroservices.MicroService.MicroServiceClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for MicroService that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:FCMicroservices.MicroService.MicroServiceClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:FCMicroservices.MicroService.MicroServiceClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:FCMicroservices.MicroService.MicroServiceClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="M:FCMicroservices.MicroService.BindService(FCMicroservices.MicroService.MicroServiceBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:FCMicroservices.MicroService.BindService(Grpc.Core.ServiceBinderBase,FCMicroservices.MicroService.MicroServiceBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+    </members>
+</doc>

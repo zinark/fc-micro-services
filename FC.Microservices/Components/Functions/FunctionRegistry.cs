@@ -1,8 +1,10 @@
 ﻿using System.Collections.Concurrent;
+
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
 using FCMicroservices.Components.FunctionRegistries;
 using FCMicroservices.Utils;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FCMicroservices.Components.Functions;
@@ -49,23 +51,27 @@ public class FunctionRegistry : IFunctionRegistry
         return found;
     }
 
-    public void Init<T>(Func<Type, Function> fFunctionBuilder)
+    public void Init<T>(Func<Type, Function> functionBuilder, IEnumerable<Type> allTypes = null)
     {
-        var types = AssemblyUtils.SearchTypes();
-        var handlerTypes = types
+        if (allTypes == null)
+        {
+            allTypes = AssemblyUtils.SearchTypes();
+        }
+
+        var handlerTypes = allTypes
             .Where(x => x.IsAssignableTo(typeof(T)))
             .Where(x => x.IsClass)
             .Where(x => !x.IsAbstract)
             .ToList();
 
-        foreach (var type in handlerTypes)
+        foreach (var handlerType in handlerTypes)
         {
-            var f = fFunctionBuilder(type);
+            Function f = functionBuilder(handlerType);
             _functions.Add(f);
             MessageTypesIndexedWithMessageName[f.MessageName] = f.MessageType;
             HandlerTypesIndexedWithMessageName[f.MessageName] = f.HandlerType;
             MessageReplyTypesIndexedWithHandlerName[f.HandlerName] = (f.MessageType, f.ReplyType);
-            _services.AddTransient(type);
+            _services.AddTransient(handlerType);
         }
     }
 
@@ -107,13 +113,13 @@ public class FunctionRegistry : IFunctionRegistry
                     {
                         MessageType = x.Key,
                         // Quantity = x.Count(),
-                        Messages = x.Select(x=>x.Url).ToList()
+                        Messages = x.Select(x => x.Url).ToList()
                     })
                 })
         };
     }
 
-    public static Function RegisterCommandQueries(Type handlerType)
+    public static Function BuildFunctionForCommandsAndQueries(Type handlerType)
     {
         var baseType = handlerType.BaseType;
         var args = baseType.GetGenericArguments();
@@ -123,9 +129,10 @@ public class FunctionRegistry : IFunctionRegistry
         var messageType = args[0];
         var replyType = args[1];
 
-        var handlerName = handlerType.Namespace + "." + handlerType.Name;
-        var replyName = replyType.Namespace + "." + replyType.Name;
-        var messageName = messageType.Namespace + "." + messageType.Name;
+
+        var handlerName = handlerType.Namespace + (!string.IsNullOrWhiteSpace(handlerType.Namespace) ? "." : "") + handlerType.Name;
+        var replyName = replyType.Namespace + (!string.IsNullOrWhiteSpace(replyType.Namespace) ? "." : "") + replyType.Name;
+        var messageName = messageType.Namespace + (!string.IsNullOrWhiteSpace(messageType.Namespace) ? "." : "") + messageType.Name;
 
         return new Function
         {
@@ -138,7 +145,7 @@ public class FunctionRegistry : IFunctionRegistry
         };
     }
 
-    public static Function RegisterEvents(Type subscriptionType)
+    public static Function BuildFunctionForEvents(Type subscriptionType)
     {
         var baseType = subscriptionType.BaseType;
         var args = baseType.GetGenericArguments();

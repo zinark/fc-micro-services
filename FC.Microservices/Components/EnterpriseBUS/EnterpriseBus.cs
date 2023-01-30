@@ -26,7 +26,7 @@ public class EnterpriseBus
     public static void Init(IFunctionRegistry registry)
     {
         _registry = registry;
-        _registry.Init<IHandler>(FunctionRegistry.RegisterCommandQueries);
+        _registry.Init<IHandler>(FunctionRegistry.BuildFunctionForCommandsAndQueries);
     }
 
     public Task<TReply> HandleAsync<T, TReply>(T msg)

@@ -15,8 +15,8 @@ public class FunctionRegistryTests
     {
         IServiceCollection services = new ServiceCollection();
         IFunctionRegistry reg = new FunctionRegistry(services);
-        reg.Init<IHandler>(FunctionRegistry.RegisterCommandQueries);
-        reg.Init<IEventSubscription>(FunctionRegistry.RegisterEvents);
+        reg.Init<IHandler>(FunctionRegistry.BuildFunctionForCommandsAndQueries);
+        reg.Init<IEventSubscription>(FunctionRegistry.BuildFunctionForEvents);
 
         reg.Info().ToJson(true).Dump();
     }
