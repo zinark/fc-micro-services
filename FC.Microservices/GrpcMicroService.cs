@@ -172,7 +172,7 @@ public class GrpcMicroService : MicroService.MicroServiceBase
                 Success = false,
                 Error = $"{ex.Message}\r\n{ex.StackTrace}",
                 Json = ex.Data.ToJson(),
-                Type = ex.GetType().Name
+                Type = ex.ErrorCode
             };
 
             _tracer.Trace("Reply - APIEXCEPTION", "reply", reply.ToJson(true));

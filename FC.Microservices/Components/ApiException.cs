@@ -1,4 +1,5 @@
-﻿using FCMicroservices.Extensions;
+﻿using System.Text.RegularExpressions;
+using FCMicroservices.Extensions;
 
 namespace FCMicroservices.Components;
 
@@ -7,6 +8,7 @@ public class ApiException : Exception
     public ApiException(string message, object? data = null, Exception? innerException = null) : base(
         string.Format(message, GetArgs(data)), innerException)
     {
+        message = Regex.Replace(message, @"{\d+}", "").Trim().Replace(" ", "");
         ErrorCode = message.AsHash();
         Message = string.Format(message, GetArgs(data));
         Data = data;
