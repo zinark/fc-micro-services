@@ -1,4 +1,5 @@
-﻿using FCMicroservices.Components;
+﻿using System.Globalization;
+using FCMicroservices.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -9,7 +10,10 @@ public static class StringExtensions
 {
     private static readonly JsonSerializerSettings _jsonSettings = new()
     {
-        ContractResolver = new CamelCasePropertyNamesContractResolver()
+        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        Culture = CultureInfo.InvariantCulture,
+        NullValueHandling = NullValueHandling.Include
     };
 
     public static string ToJson(this object? target, bool ident = false)
