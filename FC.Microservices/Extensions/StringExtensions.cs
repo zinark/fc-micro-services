@@ -16,11 +16,13 @@ public static class StringExtensions
         NullValueHandling = NullValueHandling.Include
     };
 
-    public static string ToJson(this object? target, bool ident = false)
+    public static string ToJson(this object? target, bool ident = false, int maxDepth = 64)
     {
         var formatting = ident ? Formatting.Indented : Formatting.None;
+        _jsonSettings.MaxDepth = maxDepth;
         return JsonConvert.SerializeObject(target, formatting, _jsonSettings);
     }
+
 
     public static T? ParseJson<T>(this string json)
     {
