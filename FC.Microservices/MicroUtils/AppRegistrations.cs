@@ -12,8 +12,24 @@ public class AppRegistrations
     private readonly string API_TITLE = AssemblyUtils.API_TITLE;
     private readonly string API_VERSION = AssemblyUtils.API_VERSION;
 
-    public void ApplicationSwagger(WebApplication app)
+    public void ApplicationSwagger(WebApplication app, string domainprefix)
     {
+        if (!string.IsNullOrWhiteSpace(domainprefix))
+        {
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = $"{domainprefix.Replace("/", "")}/swagger/{{documentname}}/swagger.json";
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint($"{domainprefix}/swagger/{API_VERSION}/swagger.json", API_TITLE);
+                c.RoutePrefix = $"{domainprefix.Replace("/", "")}/swagger";
+                c.InjectStylesheet("/custom-ui/theme-flattop.css");
+            });
+            return;
+        }
+        
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {

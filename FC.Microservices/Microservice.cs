@@ -35,6 +35,7 @@ public class Microservice
     private Action<Probes> _probeFunction = x => { };
 
     private Action<IServiceCollection> _svcFunction = x => { };
+    private string _domainPrefix;
 
     public Microservice Run()
     {
@@ -117,7 +118,7 @@ public class Microservice
         var appReg = new AppRegistrations();
         appReg.ApplicationGrpc(_app);
         appReg.ApplicationWeb(_app);
-        appReg.ApplicationSwagger(_app);
+        appReg.ApplicationSwagger(_app, _domainPrefix);
 
         JsonConvert
             .SerializeObject(ConfigLoader.History, Formatting.Indented)
@@ -226,6 +227,17 @@ public class Microservice
     public Microservice WithSubscription<T>()
     {
         _subscriptions.Add(typeof(T));
+        return this;
+    }
+
+    /// <summary>
+    /// Example : /app 
+    /// </summary>
+    /// <param name="prefix"></param>
+    /// <returns></returns>
+    public Microservice WithDomainPrefix(string prefix)
+    {
+        _domainPrefix = prefix;
         return this;
     }
 

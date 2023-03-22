@@ -1,6 +1,5 @@
 ﻿using FCMicroservices;
 using FCMicroservices.Components.Middlewares;
-using FooService.Features.Users;
 using Microsoft.AspNetCore.Builder;
 
 Microservice
