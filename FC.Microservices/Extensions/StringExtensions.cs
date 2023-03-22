@@ -23,6 +23,7 @@ public static class StringExtensions
         return JsonConvert.SerializeObject(target, formatting, _jsonSettings);
     }
 
+
     public static T? ParseJson<T>(this string json)
     {
         var result = JsonConvert.DeserializeObject<T>(json, _jsonSettings);

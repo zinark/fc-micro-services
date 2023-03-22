@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FooService": {
+      "commandName": "Project",
+      "jsWebView2Debugging": false
+    }
+  }
+}
