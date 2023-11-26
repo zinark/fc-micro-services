@@ -1,0 +1,93 @@
+﻿title: "Paratekle Para Cekme Islemi"
+
+steps:
+  begin-withdraw:
+    name: "begin-withdraw"
+    type: Parallel
+    inbox:
+      name: ${walletid}/begin-withdraw/in
+    outbox:
+      name: ${walletid}/begin-withdraw/out
+    failbox:
+      name: ${walletid}/begin-withdraw/fail
+    act:
+      httpCall:
+        url: "https://spec.vepara.com.tr/wallet/transaction/begin-withdraw"
+        method: POST
+
+  withdraw:
+    name: "withdraw"
+    type: Sequantal
+    needs:
+      - "begin-withdraw"
+    inbox:
+      name: ${walletid}/withdraw/in
+    outbox:
+      name: ${walletid}/withdraw/out
+    failbox:
+      name: ${walletid}/withdraw/fail
+    act:
+      httpCall:
+        url: "https://spec.vepara.com.tr/wallet/transaction/withdraw"
+        method: POST
+  
+  start-withdraw:
+    name: "start-withdraw"
+    type: Sequantal
+    needs:
+      - "withdraw"
+    inbox:
+      name: ${walletid}/start-withdraw/in
+    outbox:
+      name: ${walletid}/start-withdraw/out
+    failbox:
+      name: ${walletid}/start-withdraw/fail
+    act:
+      delaySeconds: 10
+      httpCall:
+        url: "https://cards.vepara.com.tr/api/paratek/start-withdraw"
+        method: POST
+  #        headers:
+  #          Tenant: ${vars.tenant}
+  #          Authorization: Bearer ${vars.jwt}
+  #          CorrId: ${saga.corrid}
+  #          SagaId: ${saga.id}
+  
+  complete-withdraw:
+    name: "complete-withdraw"
+    type: Parallel
+    needs:
+      - "start-withdraw"
+    inbox:
+      name: actor/${actorCode}/wallet/${walletId}/complete/withdraw
+    outbox:
+      name: actor/${actorCode}/wallet/${walletId}/complete/withdraw-reply
+    act:
+      httpCall:
+        url: "https://${tenant}.vepara.com.tr/transaction/complete-withdraw"
+        method: POST
+        headers:
+          Tenant: ${vars.tenant}
+          Authorization: Bearer ${vars.jwt}
+          CorrId: ${saga.corrid}
+          SagaId: ${saga.id}
+  
+  notify:
+    name: "complete-withdraw"
+    type: Parallel
+    needs:
+      - complete
+    inbox:
+      name: actor/${actorCode}/wallet/${walletId}/notify/withdraw
+    outbox:
+      name: actor/${actorCode}/wallet/${walletId}/notify/withdraw-reply
+    act:
+      httpCall:
+        url: "https://${tenant}.vepara.com.tr/transaction/notify"
+        method: POST
+        headers:
+          Tenant: ${vars.tenant}
+          Authorization: Bearer ${vars.jwt}
+          CorrId: ${saga.corrid}
+          SagaId: ${saga.id}
+  
