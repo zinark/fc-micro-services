@@ -8,8 +8,8 @@ public class ApiException : Exception
     public ApiException(string message, object? data = null, Exception? innerException = null) : base(
         string.Format(message, GetArgs(data)), innerException)
     {
-        message = Regex.Replace(message, @"{\d+}", "").Trim().Replace(" ", "");
-        ErrorCode = message.AsHash();
+        var messageHash = Regex.Replace(message, @"{\d+}", "").Trim().Replace(" ", "");
+        ErrorCode = messageHash.AsHash();
         Message = string.Format(message, GetArgs(data));
         Data = data;
     }
@@ -17,7 +17,7 @@ public class ApiException : Exception
     public string Message { get; set; }
     public object? Data { get; set; }
     public string ErrorCode { get; }
-    public int StatusCode { get; private set; } = 500;
+    public int StatusCode { get; private set; } = 400;
 
     /// <summary>
     ///     500

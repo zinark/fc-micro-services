@@ -18,7 +18,7 @@ public class FunctionRegistryTests
         reg.Init<IHandler>(FunctionRegistry.RegisterCommandQueries);
         reg.Init<IEventSubscription>(FunctionRegistry.RegisterEvents);
 
-        reg.Info().ToJson(true).Dump();
+        reg.Info("prefix").ToJson(true).Dump();
     }
 
     [Command]

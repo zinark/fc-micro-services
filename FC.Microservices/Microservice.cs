@@ -1,66 +1,51 @@
-﻿using System.Text;
-
+﻿using System.Diagnostics;
+using System.Text;
 using FCMicroservices.Components.Configurations;
 using FCMicroservices.Components.EnterpriseBUS;
 using FCMicroservices.Components.EnterpriseBUS.Events;
+using FCMicroservices.Components.Filters;
 using FCMicroservices.Components.Functions;
-using FCMicroservices.Components.Middlewares;
 using FCMicroservices.Components.TenantResolvers;
 using FCMicroservices.Components.Tracers;
 using FCMicroservices.Extensions;
 using FCMicroservices.MicroUtils;
 using FCMicroservices.Utils;
-
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using Newtonsoft.Json;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace FCMicroservices;
 
 public class Microservice
 {
+    private Action<WebApplication> _overrideApplication = x => { };
+    private Action<IServiceCollection> _overrideServices = x => { };
+
     private readonly List<Type> _subscriptions = new();
     private WebApplication _app;
-    private Action<WebApplication> _appFunction = x => { };
-
     private WebApplicationBuilder _builder;
     private IConfigLoader _cfgLoader;
     private IFunctionRegistry _functionRegistry;
     private IFunctionRenderer _functionRenderer = new FunctionRenderer();
-    private Action<IServiceCollection> _injectFunction = x => { };
+    private Action<IServiceCollection> _withComponents = x => { };
     private Action<Probes> _probeFunction = x => { };
 
-    private Action<IServiceCollection> _svcFunction = x => { };
-    private string _domainPrefix;
+
+    private string _domainPrefix = "";
+    private Action<IServiceProvider, MessageTrack> _beforeHandle = (provider, track) => { };
+    private Action<IServiceProvider, MessageTrack> _afterHandle = (provider, track) => { };
+    private Action<WebApplicationBuilder> _overrideBuilder = builder => { };
 
     public Microservice Run()
     {
         // SERVICES
-        DefaultInjections(_builder.Services);
-        _injectFunction(_builder.Services);
-
-        var svcReg = new ServiceRegistrations(_cfgLoader);
-        svcReg.ServiceTelemetry(_builder.Services);
-        svcReg.ServiceGrpc(_builder.Services);
-        svcReg.ServiceSwagger(_builder.Services);
-        svcReg.ServiceJson(_builder.Services);
-        svcReg.ServiceWeb(_builder.Services);
-
-        _builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        }).AddCookie(options =>
-        {
-            options.LoginPath = new PathString("/Account/Login/");
-            options.AccessDeniedPath = new PathString("/Account/Forbidden/");
-        });
-
-        _svcFunction(_builder.Services);
+        var svcReg = RegisterDefaultServices();
+        _overrideServices(_builder.Services);
 
         // PROBES
         var probes = new Probes();
@@ -68,28 +53,45 @@ public class Microservice
         probes.ToJson(true).Dump("PROBES");
         svcReg.ServiceHealthChecks(_builder.Services, probes);
 
+
+        _overrideBuilder(_builder);
         // APP
         _app = _builder.Build();
+
+
+        _overrideApplication(_app);
+
+        if (!string.IsNullOrWhiteSpace(_domainPrefix))
+        {
+            _app.UsePathBase(new PathString(_domainPrefix));
+        }
+
+        _app.UseAuthentication();
         _app.UseStaticFiles();
         _app.UseRouting();
-        _app.UseAuthentication();
+        _app.UseRateLimiter();
         _app.UseAuthorization();
 
-        _appFunction(_app);
 
+        var appReg = new AppRegistrations();
+        appReg.ApplicationGrpc(_app);
+        appReg.ApplicationWeb(_app);
+        appReg.ApplicationSwagger(_app, _domainPrefix);
+
+        _app.UseExceptionHandler("/error");
         var subscriber = _app.Services.GetService<IEventSubscriber>();
 
         var subscribers = new List<dynamic>();
         foreach (var sub in _subscriptions)
         {
-            Console.WriteLine("subscribing... " + sub.FullName);
+            Debug.WriteLine("subscribing... " + sub.FullName);
             subscriber.Listen(sub);
             subscribers.Add(sub.Name);
         }
 
         subscribers.ToJson(true).Dump("SUBSCRIPTIONS");
 
-        _app.UseMiddleware<JsonExceptionMiddleware>();
+        // _app.UseMiddleware<JsonExceptionMiddleware>();
         var functionRegistry = _app.Services.GetService<IFunctionRegistry>();
 
         _app.MapPost("/publish", async (HttpContext ctx, IEventPublisher pub) =>
@@ -113,65 +115,81 @@ public class Microservice
             return Results.Content(_functionRenderer.Render(found), "text/html", Encoding.UTF8);
         });
 
-
-
-        var appReg = new AppRegistrations();
-        appReg.ApplicationGrpc(_app);
-        appReg.ApplicationWeb(_app);
-        appReg.ApplicationSwagger(_app, _domainPrefix);
-
         JsonConvert
             .SerializeObject(ConfigLoader.History, Formatting.Indented)
             .Dump("ConfigLoader");
 
         _app.Run();
         return this;
+    }
 
-        void DefaultInjections(IServiceCollection services)
+    public ServiceRegistrations RegisterDefaultServices()
+    {
+        var services = _builder.Services;
+        services.AddSingleton<EnterpriseBus>();
+        services.AddSingleton<QueueDriver>();
+
+        services.AddTransient<INetworkUtils, DefaultNetworkUtils>();
+        services.AddSingleton<IConfigLoader, ConfigLoader>();
+        services.AddSingleton<ITenantResolver, HttpTenantResolver>();
+        var use_pubsub = _cfgLoader.Load("use_pubsub", "no") == "yes";
+        var use_tracer = _cfgLoader.Load("use_tracer", "no") == "yes";
+
+        if (use_tracer)
+            services.AddSingleton<ITracer, LogTracer>();
+        else
+            services.AddSingleton<ITracer, NoTracer>();
+
+        if (use_pubsub)
         {
-            services.AddSingleton<EnterpriseBus>();
-            services.AddTransient<INetworkUtils, DefaultNetworkUtils>();
-            services.AddSingleton<IConfigLoader, ConfigLoader>();
-            services.AddSingleton<ITenantResolver, HttpTenantResolver>();
+            var url = _cfgLoader.Load("PUBSUB_URL", "http://localhost:4222");
 
-            var use_pubsub = _cfgLoader.Load("use_pubsub", "no") == "yes";
-            var use_tracer = _cfgLoader.Load("use_tracer", "no") == "yes";
-
-            if (use_tracer)
-                services.AddSingleton<ITracer, LogTracer>();
-            else
-                services.AddSingleton<ITracer, NoTracer>();
-
-            if (use_pubsub)
+            services.AddSingleton<IEventPublisher, EventPublisher>(x =>
             {
-                var url = _cfgLoader.Load("PUBSUB_URL", "http://localhost:4222");
+                var cfgLoader = x.GetRequiredService<IConfigLoader>();
+                return new EventPublisher(url);
+            });
 
-                services.AddTransient<IEventPublisher, EventPublisher>(x =>
-                {
-                    var cfgLoader = x.GetRequiredService<IConfigLoader>();
-                    return new EventPublisher(url);
-                });
-
-                services.AddSingleton<IEventSubscriber>(x =>
-                {
-                    var cfgLoader = _app.Services.GetService<IConfigLoader>();
-                    var tracer = _app.Services.GetService<ITracer>();
-                    var serviceProvider = _app.Services;
-                    return new NatsIOEventSubscriber(serviceProvider, tracer, url);
-                });
-            }
-            else
+            services.AddSingleton<IEventSubscriber>(x =>
             {
-                services.AddTransient<IEventPublisher, NoEventPublisher>();
-                services.AddTransient<IEventSubscriber, NoEventSubscriber>();
-            }
-
-
-            _functionRegistry = new FunctionRegistry(services);
-            services.AddSingleton(x => _functionRegistry);
-            EnterpriseBus.Init(_functionRegistry);
-            NatsIOEventSubscriber.Init(_functionRegistry);
+                var cfgLoader = _app.Services.GetService<IConfigLoader>();
+                var tracer = _app.Services.GetService<ITracer>();
+                var serviceProvider = _app.Services;
+                return new NatsIOEventSubscriber(serviceProvider, tracer, url);
+            });
         }
+        else
+        {
+            services.AddTransient<IEventPublisher, NoEventPublisher>();
+            services.AddTransient<IEventSubscriber, NoEventSubscriber>();
+        }
+
+
+        _functionRegistry = new FunctionRegistry(services);
+        services.AddSingleton(x => _functionRegistry);
+        EnterpriseBus.Init(_functionRegistry, _beforeHandle, _afterHandle);
+        NatsIOEventSubscriber.Init(_functionRegistry);
+
+        _withComponents(_builder.Services);
+
+        var svcReg = new ServiceRegistrations(_cfgLoader);
+        svcReg.ServiceTelemetry(_builder.Services);
+        svcReg.ServiceGrpc(_builder.Services);
+        svcReg.ServiceSwagger(_builder.Services, _domainPrefix);
+        svcReg.ServiceJson(_builder.Services);
+        svcReg.ServiceWeb(_builder.Services);
+        _builder.Services.AddControllers(options => { options.Filters.Add<ApiExceptionFilter>(); });
+        _builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
+        {
+            options.LoginPath = new PathString("/Account/Login/");
+            options.AccessDeniedPath = new PathString("/Account/Forbidden/");
+        });
+
+        return svcReg;
     }
 
     public static Microservice Create(string[] args)
@@ -195,8 +213,15 @@ public class Microservice
     {
         var services = _builder.Services;
         var conn_str = _cfgLoader.Load("DB");
-        services.AddDbContextFactory<T>(x => x.UseNpgsql(conn_str).UseSnakeCaseNamingConvention());
-        services.AddDbContext<T>(x => x.UseNpgsql(conn_str).UseSnakeCaseNamingConvention());
+
+        Action<NpgsqlDbContextOptionsBuilder>? opts = x => x.CommandTimeout(60 * 3);
+        // .EnableRetryOnFailure(
+        //     maxRetryCount: 10,
+        //     maxRetryDelay: TimeSpan.FromSeconds(10),
+        //     errorCodesToAdd: null);
+
+        services.AddDbContextFactory<T>(x => x.UseNpgsql(conn_str, opts).UseSnakeCaseNamingConvention());
+        services.AddDbContext<T>(x => x.UseNpgsql(conn_str, opts).UseSnakeCaseNamingConvention());
         return this;
     }
 
@@ -206,21 +231,27 @@ public class Microservice
         return this;
     }
 
-    public Microservice WithComponents(Action<IServiceCollection> injectFunction)
+    public Microservice WithComponents(Action<IServiceCollection> components)
     {
-        _injectFunction = injectFunction;
+        _withComponents = components;
         return this;
     }
 
-    public Microservice OverrideServices(Action<IServiceCollection> svcFunction)
+    public Microservice OverrideServices(Action<IServiceCollection> services)
     {
-        _svcFunction = svcFunction;
+        _overrideServices = services;
         return this;
     }
 
-    public Microservice OverrideApp(Action<WebApplication> appFunction)
+    public Microservice OverrideApp(Action<WebApplication> app)
     {
-        _appFunction = appFunction;
+        _overrideApplication = app;
+        return this;
+    }
+
+    public Microservice OverrideBuilder(Action<WebApplicationBuilder> builder)
+    {
+        _overrideBuilder = builder;
         return this;
     }
 
@@ -248,7 +279,19 @@ public class Microservice
             Title = AssemblyUtils.API_TITLE,
             Version = AssemblyUtils.API_VERSION,
             Configs = ConfigLoader.History,
-            Registry = registry.Info()
+            Registry = registry.Info(_domainPrefix)
         };
+    }
+
+    public Microservice BeforeHandle(Action<IServiceProvider, MessageTrack> fTrack)
+    {
+        _beforeHandle = fTrack;
+        return this;
+    }
+
+    public Microservice AfterHandle(Action<IServiceProvider, MessageTrack> fTrack)
+    {
+        _afterHandle = fTrack;
+        return this;
     }
 }

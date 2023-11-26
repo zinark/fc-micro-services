@@ -2,5 +2,6 @@
 
 public interface IHandler
 {
-    public object Handle(object input);
+    object Handle(object input);
+    void SetExtras(Dictionary<string, string> extras);
 }

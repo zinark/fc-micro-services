@@ -1,11 +1,10 @@
-﻿using System.Text;
-
+﻿using System.Diagnostics;
+using System.Text;
 using FCMicroservices.Components.Functions;
 using FCMicroservices.Components.Tracers;
+using FCMicroservices.Extensions;
 using FCMicroservices.Utils;
-
 using NATS.Client;
-
 using Newtonsoft.Json;
 
 namespace FCMicroservices.Components.EnterpriseBUS.Events;
@@ -54,7 +53,6 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
         var (success, subscriptionType) = _registry.FindHandlerType(type.FullName);
         if (!success) throw new ApiException("Uygun eventsubscription kayitlanmamis! {0}", new { type.FullName });
         var subscription = (IEventSubscription)_serviceProvider.GetService(subscriptionType);
-
         var subject = type.FullName;
         Subscribe(subject, x => { subscription.OnEvent(x); });
     }
@@ -91,43 +89,47 @@ public class NatsIOEventSubscriber : IDisposable, IEventSubscriber
         var result = _connection.SubscribeAsync(subject, (sender, args) =>
         {
             var type = _registeredEvents.Where(x => x.FullName.Contains(subject)).FirstOrDefault();
-            if (type == null) throw new ApiException("{0} event-type (subject) icin bir dinleyi bulunamadi!", new { subject });
+            if (type == null)
+                throw new ApiException(
+                    "{0} event-type (subject) icin bir dinleyici bulunamadi! Bir EventSubscription olusturun.",
+                    new { subject });
 
             var data_bytes = args.Message.Data;
             var data_string = Encoding.UTF8.GetString(data_bytes);
 
-            var data_json = JsonConvert.DeserializeObject(data_string, type);
+            var input = JsonConvert.DeserializeObject(data_string, type);
             // TODO : FERHAT ! typless trytoparsejson needed
             // var (success, data_json) = data_string.TryToParseJson<T>();
             //if (!success) throw new ApiException("Event olarak gelen mesaj {0} tipine cevrilemedi!", new { subject });
+
+            var traceVals = new Dictionary<string, object>
+            {
+                { "input", input.ToJson(true) },
+                { "ns", type?.Namespace },
+                { "type", type?.Name }
+            };
+
+            using var trace = _tracer.Trace(type.Name + "[EVENT]", traceVals);
+
             try
             {
-                onMessage(data_json);
-                _tracer.Trace("EVENT> " + type.Namespace, new Dictionary<string, object>
-                {
-                    { "ns", type.Namespace },
-                    { "type", type.Name },
-                    { "body", data_string }
-                });
-
+                onMessage(input);
                 args.Message.Ack();
             }
             catch (Exception? exc)
             {
+                trace.SetTag("exception", exc.Message);
+                trace.SetTag("exception-trace", exc.ToString());
+                trace.SetStatus(ActivityStatusCode.Error);
                 args.Message.Nak();
 
-                _tracer.Trace("EVENT EXCEPTION!> " + type.Namespace, new Dictionary<string, object>
+                throw new ApiException("Gelen event icin {0} islem yapilamadi! {1}", new
                 {
-                    { "ns", type?.Namespace },
-                    { "type", type?.Name },
-                    { "exception", exc.ToString() }
-                });
-
-                throw new ApiException("Gelen event icin {0} islem yapilamadi!", new
-                {
-                    data_json
+                    input = input.ToJson(true),
+                    trace = exc.ToString()
                 }, exc);
             }
         });
+        Debug.WriteLine(result.ToString());
     }
 }

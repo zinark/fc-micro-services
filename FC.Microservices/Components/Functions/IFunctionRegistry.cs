@@ -7,5 +7,5 @@ public interface IFunctionRegistry
     void Init<T>(Func<Type, Function> metaFunction);
     (bool success, Type handlerType) FindHandlerType(string messageName);
     (bool success, Type messageType) FindMessage(string messageName);
-    object Info();
+    object Info(string domainPrefix);
 }

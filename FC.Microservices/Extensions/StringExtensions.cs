@@ -29,6 +29,25 @@ public static class StringExtensions
         var result = JsonConvert.DeserializeObject<T>(json, _jsonSettings);
         return result;
     }
+    
+    public static string GetJsonValue(this string json, string path)
+    {
+        try
+        {
+            var result = JObject.Parse(json).SelectToken(path)?.ToString();
+            return result;
+        }
+        catch (Exception e)
+        {
+            return path;
+        }
+    }
+    
+    public static string JoinString(this IEnumerable<string> array, string seperator = ",")
+    {
+        return string.Join(seperator, array);
+    }
+
 
     public static (bool, T?) TryToParseJson<T>(this string json)
     {

@@ -99,7 +99,7 @@ public class GrpcMicroServiceTests
     {
         IServiceCollection services = new ServiceCollection();
         var functionRegistry = new FunctionRegistry(services);
-        EnterpriseBus.Init(functionRegistry);
+        EnterpriseBus.Init(functionRegistry, (serviceProvider, track) => { }, (serviceProvider, track) => { });
 
         IServiceProvider provider = services
             .AddSingleton<ITracer, NoTracer>()

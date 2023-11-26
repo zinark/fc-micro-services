@@ -87,7 +87,7 @@ public class FunctionRegistry : IFunctionRegistry
         return (true, MessageTypesIndexedWithMessageName[messageName]);
     }
 
-    public object Info()
+    public object Info(string domainPrefix)
     {
         var functions = _functions.OrderBy(x => x.MessageName);
         var commands = MakeFunctions<CommandAttribute>(functions);
@@ -110,7 +110,7 @@ public class FunctionRegistry : IFunctionRegistry
                     //    // Quantity = x.Count(),
                     //    Messages = x.Select(x=>x.Url).ToList()
                     //}),
-                    Messages = ns.Select(x => x.Url).ToList()
+                    Messages = ns.Select(x => domainPrefix + x.Url).ToList()
                 })
         };
     }

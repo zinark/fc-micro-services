@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
-
+using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -94,25 +94,33 @@ public class ServiceRegistrations
         }
     }
 
-    public void ServiceSwagger(IServiceCollection services)
+    public void ServiceSwagger(IServiceCollection services, string domainPrefix)
     {
         services.AddSwaggerGen(c =>
         {
+            c.AddServer(new OpenApiServer()
+            {
+                Url = domainPrefix
+            });
             c.SwaggerDoc(API_VERSION, new OpenApiInfo
             {
                 Title = API_TITLE + " " + API_VERSION,
                 Version = API_VERSION,
+                Contact = new OpenApiContact()
+                {
+                    Name = "contact",
+                    Url = new Uri("https://www.google.com")
+                }
             });
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                Description = @"Bearer 12345abcdef seklinde Authorization key'e value gonderin.",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                BearerFormat = "JWT",
+                Scheme = "bearer"
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -160,6 +168,7 @@ public class ServiceRegistrations
             .AddOpenTelemetryTracing(opt => opt
                 .AddSource(API_FULL_NAME)
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(API_FULL_NAME))
+                .AddNpgsql()
                 //.AddConsoleExporter(options => { })
                 .AddJaegerExporter(options =>
                 {
